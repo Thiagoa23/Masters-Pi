@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.masterspi.config;
 
 import com.masterspi.service.CustomUserDetailsService;
@@ -9,11 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
     private final CustomUserDetailsService userDetailsService;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService) {
@@ -21,33 +18,46 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return rawPassword.toString();
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return rawPassword.toString().equals(encodedPassword);
+            }
+        };
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/error").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/backoffice/login", "/public/**").permitAll()
+                .requestMatchers("/backoffice/usuarios/**").hasRole("ADMIN")
+                .requestMatchers("/backoffice/**").hasAnyRole("ADMIN", "ESTOQUISTA")
+                .anyRequest().permitAll()
+                )
+                .formLogin(form -> form
+                .loginPage("/backoffice/login")
+                .loginProcessingUrl("/backoffice-login")
                 .defaultSuccessUrl("/backoffice", true)
                 .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                )
+                .logout(logout -> logout
+                .logoutUrl("/backoffice/logout")
+                .logoutSuccessUrl("/backoffice/login")
                 .permitAll()
-            );
+                );
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder encoder) 
+    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder encoder)
             throws Exception {
         return http.getSharedObject(AuthenticationManager.class);
     }
