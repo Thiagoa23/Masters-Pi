@@ -6,6 +6,61 @@
 </head>
 <body>
     <h1>Lista de Usuários</h1>
-    <p>Esta página será desenvolvida posteriormente.</p>
+
+    <!-- FILTRO POR NOME -->
+    <form th:action="@{/backoffice/usuarios}" method="get">
+        <input type="text" name="nome" placeholder="Filtrar por nome" />
+        <button type="submit">Filtrar</button>
+    </form>
+
+    <br>
+
+    <!-- BOTÃO DE INCLUIR USUÁRIO -->
+    <a th:href="@{/backoffice/usuarios/incluir}">+ Incluir Usuário</a>
+
+    <br><br>
+
+    <!-- TABELA DE USUÁRIOS -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Grupo</th>
+                <th>Alterar</th>
+                <th>Hab/Des</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Percorre a lista de usuários -->
+            <tr th:each="usuario : ${usuarios}">
+                <td th:text="${usuario.nome}">Nome</td>
+                <td th:text="${usuario.email}">Email</td>
+                <!-- Mostra "Ativo" se enabled=true, senão "Inativo" -->
+                <td th:text="${usuario.enabled ? 'Ativo' : 'Inativo'}">Status</td>
+                <td th:text="${usuario.role}">Grupo</td>
+
+                <!-- Link para Alterar -->
+                <td>
+                    <a th:href="@{'/backoffice/usuarios/alterar/' + ${usuario.id}}">Alterar</a>
+                </td>
+
+                <!-- Link de Habilitar/Inabilitar -->
+                <td>
+                    <!-- Se o usuário listado for o mesmo que está logado, exibe um traço -->
+                    <span th:if="${usuario.email} == ${loggedInUser}">-</span>
+                    <!-- Caso contrário, mostra "Inabilitar" se ativo ou "Reativar" se inativo -->
+                    <a th:if="${usuario.email} != ${loggedInUser}"
+                       href="javascript:void(0)"
+                       th:text="${usuario.enabled ? 'Inabilitar' : 'Reativar'}">
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <a th:href="@{/backoffice}">Voltar ao Backoffice</a>
 </body>
 </html>

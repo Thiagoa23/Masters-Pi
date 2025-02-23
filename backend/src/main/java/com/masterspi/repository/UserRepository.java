@@ -5,12 +5,17 @@
 package com.masterspi.repository;
 
 import com.masterspi.model.User;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
+
 /**
  *
  * @author andra
  */
 public interface UserRepository extends JpaRepository<User, Long> {
+
     Optional<User> findByEmail(String email);
+
+    List<User> findByNomeContainingIgnoreCase(String nome);
 }
