@@ -1,11 +1,68 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        
-    </head>
-    <body>
-        <h1>Tela de cadastrar/alterar</h1>
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${usuario.id != null ? 'Alterar Usuário' : 'Novo Usuário'}">Usuário</title>
+    <!-- Biblioteca CryptoJS para SHA-256 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <h1 th:text="${usuario.id != null ? 'Alterar Usuário' : 'Novo Usuário'}"></h1>
+    <form th:action="@{/backoffice/usuarios/salvar}" method="post">
+        <input type="hidden" name="id" th:value="${usuario.id}" />
 
-    </body>
+        <div>
+            <label>Nome:</label>
+            <input type="text" name="nome" th:value="${usuario.nome}" required />
+        </div>
+        <div>
+            <label>CPF:</label>
+            <input type="text" name="cpf" th:value="${usuario.cpf}" required />
+        </div>
+        <div>
+            <label>Email:</label>
+            <!-- Campo email desabilitado para impedir alterações -->
+            <input type="email" name="email" th:value="${usuario.email}" disabled />
+        </div>
+        <div>
+            <label>Nova Senha:</label>
+            <input type="password" id="password" name="password" placeholder="Digite a nova senha (ou deixe em branco)" />
+        </div>
+        <div>
+            <label>Confirmar Senha:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme a nova senha" />
+        </div>
+        <div>
+            <label>Grupo:</label>
+            <!-- Se o usuário logado for o mesmo que está sendo alterado, desabilita a alteração do grupo -->
+            <select name="role" th:disabled="${usuario.email == loggedInUser}">
+                <option value="ADMIN" th:selected="${usuario.role == 'ADMIN'}">Administrador</option>
+                <option value="ESTOQUISTA" th:selected="${usuario.role == 'ESTOQUISTA'}">Estoquista</option>
+                <option value="CLIENTE" th:selected="${usuario.role == 'CLIENTE'}">Cliente</option>
+            </select>
+        </div>
+        <button type="submit">Salvar</button>
+    </form>
+
+    <br>
+    <a th:href="@{/backoffice/usuarios}">⬅️ Voltar à Lista de Usuários</a>
+
+    <!-- Script para criptografar senha e confirmar a senha -->
+    <script>
+        document.querySelector("form").addEventListener("submit", function (event) {
+            var passwordInput = document.getElementById("password");
+            var confirmPasswordInput = document.getElementById("confirmPassword");
+            if (passwordInput.value !== "") {
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    alert("As senhas não coincidem!");
+                    event.preventDefault();
+                    return;
+                }
+                // Criptografa as senhas com SHA-256, assim como no login
+                passwordInput.value = CryptoJS.SHA256(passwordInput.value).toString();
+                confirmPasswordInput.value = CryptoJS.SHA256(confirmPasswordInput.value).toString();
+            }
+        });
+    </script>
+</body>
 </html>

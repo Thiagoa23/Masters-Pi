@@ -3,12 +3,12 @@ package com.masterspi.controller;
 import com.masterspi.model.User;
 import com.masterspi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -17,6 +17,9 @@ public class BackofficeController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // Página de Login
     @GetMapping("/backoffice/login")
@@ -66,6 +69,7 @@ public class BackofficeController {
         return "usuario-form";
     }
 
+    // Rota para ativar/inativar usuário (toggle)
     @PostMapping("/backoffice/usuarios/toggle/{id}")
     public String toggleUsuario(@PathVariable Long id) {
         User usuario = userRepository.findById(id)
@@ -75,4 +79,45 @@ public class BackofficeController {
         return "redirect:/backoffice/usuarios";
     }
 
+    // Rota para salvar (incluir ou alterar) usuário
+    @PostMapping("/backoffice/usuarios/salvar")
+    public String salvarUsuario(@ModelAttribute User usuario,
+            @RequestParam(required = false) String password,
+            @RequestParam(required = false) String confirmPassword,
+            Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUserEmail = (auth != null) ? auth.getName() : "";
+
+        if (usuario.getId() != null) { // Edição de usuário
+            User usuarioExistente = userRepository.findById(usuario.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+            // Mantém o email inalterado
+            usuario.setEmail(usuarioExistente.getEmail());
+
+            // Se o usuário logado for o mesmo que está sendo alterado, não permite alterar o grupo
+            if (usuario.getEmail().equals(loggedInUserEmail)) {
+                usuario.setRole(usuarioExistente.getRole());
+            }
+
+            // Se a senha estiver preenchida (já criptografada pelo front-end), utiliza-a; caso contrário, mantém a senha atual
+            if (password != null && !password.isEmpty()) {
+                if (!password.equals(confirmPassword)) {
+                    model.addAttribute("error", "As senhas não coincidem!");
+                    return "usuario-form";
+                }
+                usuario.setPassword(password); // Já está criptografada no cliente
+            } else {
+                usuario.setPassword(usuarioExistente.getPassword());
+            }
+        } else { // Inclusão de novo usuário
+            if (password == null || password.isEmpty() || !password.equals(confirmPassword)) {
+                model.addAttribute("error", "As senhas não coincidem ou não foram preenchidas!");
+                return "usuario-form";
+            }
+            usuario.setPassword(password); // Valor já criptografado pelo cliente
+        }
+
+        userRepository.save(usuario);
+        return "redirect:/backoffice/usuarios";
+    }
 }
