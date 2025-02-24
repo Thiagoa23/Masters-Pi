@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class CustomFailHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
-        // Se a exceção indicar que o usuário está desabilitado (inativo)
+        // Se o usuário estiver inativo
         if (exception instanceof DisabledException) {
             response.sendRedirect("/backoffice/login?disabled=true");
         } else {

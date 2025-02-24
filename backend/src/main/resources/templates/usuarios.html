@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Lista de Usuários</title>
+    </head>
+    <body>
+        <h1>Lista de Usuários</h1>
+
+
+        <form th:action="@{/backoffice/usuarios}" method="get">
+            <input type="text" name="nome" placeholder="Filtrar por nome" />
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <br>
+
+        <a th:href="@{/backoffice/usuarios/incluir}">+ Incluir Usuário</a>
+
+        <br><br>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Grupo</th>
+                    <th>Alterar</th>
+                    <th>Hab/Des</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario : ${usuarios}">
+                    <td th:text="${usuario.nome}">Nome</td>
+                    <td th:text="${usuario.email}">Email</td>
+
+                    <td th:text="${usuario.enabled ? 'Ativo' : 'Inativo'}">Status</td>
+                    <td th:text="${usuario.role}">Grupo</td>
+
+
+                    <td>
+                        <a th:href="@{'/backoffice/usuarios/alterar/' + ${usuario.id}}">Alterar</a>
+                    </td>
+
+
+                    <td>
+                        <span th:if="${usuario.email} == ${loggedInUser}">-</span>
+
+                        <a th:if="${usuario.email} != ${loggedInUser}"
+                           href="javascript:void(0)"
+                           th:text="${usuario.enabled ? 'Inabilitar' : 'Reativar'}"
+                           th:onclick="'confirmToggle(' + ${usuario.id} + ')'">
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <a th:href="@{/backoffice}">Voltar ao Backoffice</a>
+
+        <script>
+            function confirmToggle(id) {
+                if (confirm("Você realmente deseja alterar o status do usuário?")) {
+                    var form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/backoffice/usuarios/toggle/' + id;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        </script>
+    </body>
+</html>

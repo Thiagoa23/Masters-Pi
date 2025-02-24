@@ -5,11 +5,9 @@ import com.masterspi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -18,16 +16,13 @@ public class BackofficeController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    // Página de Login
+    // Rota Login
     @GetMapping("/backoffice/login")
     public String showBackofficeLogin() {
         return "login";
     }
 
-    // Página Principal do Backoffice
+    // Rota Backoffice
     @GetMapping("/backoffice")
     public String showBackofficeHome(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,14 +32,20 @@ public class BackofficeController {
         return "backoffice";
     }
 
-    // Listagem e Filtro de Usuários
+    //Rota Erro 403
+    @GetMapping("/403")
+    public String acessoNegado() {
+        return "403";
+    }
+
+    // Listagem e Filtro
     @GetMapping("/backoffice/usuarios")
     public String listarUsuarios(@RequestParam(value = "nome", required = false) String nome, Model model) {
         List<User> usuarios = (nome != null && !nome.isEmpty())
                 ? userRepository.findByNomeContainingIgnoreCase(nome)
                 : userRepository.findAll();
 
-        // Captura o usuário autenticado e passa para o modelo
+        // salva usuario logado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUser = (auth != null) ? auth.getName() : "";
 
@@ -53,23 +54,28 @@ public class BackofficeController {
         return "usuarios";
     }
 
-    // Rota para incluir usuário (apenas exibe a página de cadastro)
+    // Rota Cadastro
     @GetMapping("/backoffice/usuarios/incluir")
     public String incluirUsuario(Model model) {
         model.addAttribute("usuario", new User());
         return "usuario-form";
     }
 
-    // Rota para alterar usuário (apenas exibe a página de alteração)
+    // Rota Alterar
     @GetMapping("/backoffice/usuarios/alterar/{id}")
     public String alterarUsuario(@PathVariable Long id, Model model) {
         User usuario = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUser = (auth != null) ? auth.getName() : "";
+        
         model.addAttribute("usuario", usuario);
+        model.addAttribute("loggedInUser", loggedInUser);
         return "usuario-form";
     }
 
-    // Rota para ativar/inativar usuário (toggle)
+    // Rota para ativar/inativar usuário
     @PostMapping("/backoffice/usuarios/toggle/{id}")
     public String toggleUsuario(@PathVariable Long id) {
         User usuario = userRepository.findById(id)
@@ -88,33 +94,56 @@ public class BackofficeController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUserEmail = (auth != null) ? auth.getName() : "";
 
-        if (usuario.getId() != null) { // Edição de usuário
+        // Validação do CPF
+        if (!com.masterspi.util.CPFValidator.isValidCPF(usuario.getCpf())) {
+            model.addAttribute("error", "CPF inválido!");
+            model.addAttribute("usuario", usuario);
+            return "usuario-form";
+        }
+
+        if (usuario.getId() != null) { //Alterar
             User usuarioExistente = userRepository.findById(usuario.getId())
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
             // Mantém o email inalterado
             usuario.setEmail(usuarioExistente.getEmail());
 
-            // Se o usuário logado for o mesmo que está sendo alterado, não permite alterar o grupo
+            //mantem o grupo
+            if (usuarioExistente.getEmail().equals(loggedInUserEmail)) {
+                usuario.setRole(usuarioExistente.getRole());
+            }
+
+            // usuário logado não pode alterar seu proprio grupo
             if (usuario.getEmail().equals(loggedInUserEmail)) {
                 usuario.setRole(usuarioExistente.getRole());
             }
 
-            // Se a senha estiver preenchida (já criptografada pelo front-end), utiliza-a; caso contrário, mantém a senha atual
+            // Validação de Senha
             if (password != null && !password.isEmpty()) {
                 if (!password.equals(confirmPassword)) {
                     model.addAttribute("error", "As senhas não coincidem!");
                     return "usuario-form";
                 }
-                usuario.setPassword(password); // Já está criptografada no cliente
+                usuario.setPassword(password);
             } else {
                 usuario.setPassword(usuarioExistente.getPassword());
             }
-        } else { // Inclusão de novo usuário
-            if (password == null || password.isEmpty() || !password.equals(confirmPassword)) {
-                model.addAttribute("error", "As senhas não coincidem ou não foram preenchidas!");
+        } else { // Incluir
+
+            //verificação email
+            if (userRepository.findByEmail(usuario.getEmail()).isPresent()) {
+                model.addAttribute("error", "Já existe um usuário cadastrado com este email!");
+                model.addAttribute("usuario", usuario);
                 return "usuario-form";
             }
-            usuario.setPassword(password); // Valor já criptografado pelo cliente
+
+            //validação senha
+            if (password == null || password.isEmpty() || !password.equals(confirmPassword)) {
+                model.addAttribute("error", "As senhas não coincidem ou não foram preenchidas!");
+                model.addAttribute("usuario", usuario);
+                return "usuario-form";
+            }
+            usuario.setPassword(password);
+            usuario.setEnabled(true);
         }
 
         userRepository.save(usuario);

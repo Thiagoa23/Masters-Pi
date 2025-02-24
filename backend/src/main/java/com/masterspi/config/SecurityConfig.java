@@ -16,7 +16,7 @@ public class SecurityConfig {
     private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          AuthenticationFailureHandler customAuthenticationFailureHandler) {
+            AuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.userDetailsService = userDetailsService;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
@@ -39,31 +39,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/backoffice/login").permitAll()
                 .requestMatchers("/backoffice/usuarios/**").hasRole("ADMIN")
                 .requestMatchers("/backoffice/**").hasAnyRole("ADMIN", "ESTOQUISTA")
                 .anyRequest().permitAll()
-            )
-            .formLogin(form -> form
+                )
+                .formLogin(form -> form
                 .loginPage("/backoffice/login")
                 .loginProcessingUrl("/backoffice-login")
                 .defaultSuccessUrl("/backoffice", true)
-                .failureHandler(customAuthenticationFailureHandler) // Aqui usamos o handler customizado
+                .failureHandler(customAuthenticationFailureHandler)
                 .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/backoffice/logout")
-                .logoutSuccessUrl("/backoffice/login")
-                .permitAll()
-            );
+                )
+                .exceptionHandling(exception -> exception
+                .accessDeniedPage("/403")
+                );
 
         return http.build();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder encoder)
-            throws Exception {
-        return http.getSharedObject(AuthenticationManager.class);
     }
 }

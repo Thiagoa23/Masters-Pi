@@ -19,9 +19,8 @@
         <button type="submit">Entrar</button>
     </form>
 
-    <!-- Mensagem específica para conta inativa -->
     <p th:if="${param.disabled}">Seu usuário está inativo. Por favor, entre em contato com o administrador.</p>
-    <!-- Mensagem de erro para demais falhas de autenticação -->
+  
     <p th:if="${param.error}">Usuário ou senha inválidos!</p>
 
     <script>
