@@ -66,10 +66,10 @@ public class BackofficeController {
     public String alterarUsuario(@PathVariable Long id, Model model) {
         User usuario = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String loggedInUser = (auth != null) ? auth.getName() : "";
-        
+
         model.addAttribute("usuario", usuario);
         model.addAttribute("loggedInUser", loggedInUser);
         return "usuario-form";
@@ -106,7 +106,8 @@ public class BackofficeController {
                     .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
             // Mantém o email inalterado
             usuario.setEmail(usuarioExistente.getEmail());
-
+            // Mantém o status
+            usuario.setEnabled(usuarioExistente.isEnabled());
             //mantem o grupo
             if (usuarioExistente.getEmail().equals(loggedInUserEmail)) {
                 usuario.setRole(usuarioExistente.getRole());

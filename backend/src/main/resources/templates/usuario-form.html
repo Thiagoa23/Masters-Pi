@@ -3,8 +3,14 @@
     <head>
         <meta charset="UTF-8">
         <title th:text="${usuario.id != null ? 'Alterar Usuário' : 'Novo Usuário'}">Usuário</title>
-        
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+        <style>
+            .error-message {
+                color: red;
+                margin-top: 5px;
+            }
+        </style>
     </head>
     <body>
         <h1 th:text="${usuario.id != null ? 'Alterar Usuário' : 'Novo Usuário'}"></h1>
@@ -12,7 +18,7 @@
         <div th:if="${error}" style="color: red;">
             <p th:text="${error}"></p>
         </div>
-        
+
         <form th:action="@{/backoffice/usuarios/salvar}" method="post">
             <input type="hidden" name="id" th:value="${usuario.id}" />
 
@@ -36,6 +42,7 @@
             <div>
                 <label>Confirmar Senha:</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirme a nova senha" />
+                <div id="senhaError" class="error-message" style="display:none;">As senhas não coincidem!</div>
             </div>
             <div>
                 <label>Grupo:</label>
@@ -55,9 +62,13 @@
             document.querySelector("form").addEventListener("submit", function (event) {
                 var passwordInput = document.getElementById("password");
                 var confirmPasswordInput = document.getElementById("confirmPassword");
+                var senhaError = document.getElementById("senhaError");
+                senhaError.style.display = "none";
+
                 if (passwordInput.value !== "") {
                     if (passwordInput.value !== confirmPasswordInput.value) {
                         event.preventDefault();
+                        senhaError.style.display = "block";
                         return;
                     }
                     // Criptografa
@@ -66,13 +77,13 @@
                 }
             });
         </script>
-        
+
         <!-- limitar dígitos e aplicar máscara ao CPF -->
         <script>
             function formatCPF(cpf) {
                 cpf = cpf.replace(/\D/g, '');
                 cpf = cpf.substring(0, 11);
-         
+
                 if (cpf.length === 11) {
                     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
                 }
@@ -92,7 +103,7 @@
                     cpfInput.value = raw;
                 }
             });
-   
+
             document.addEventListener('DOMContentLoaded', function () {
                 if (cpfInput.value) {
                     let raw = cpfInput.value.replace(/\D/g, '');
