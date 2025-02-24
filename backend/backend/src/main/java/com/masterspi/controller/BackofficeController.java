@@ -65,4 +65,14 @@ public class BackofficeController {
         model.addAttribute("usuario", usuario);
         return "usuario-form";
     }
+
+    @PostMapping("/backoffice/usuarios/toggle/{id}")
+    public String toggleUsuario(@PathVariable Long id) {
+        User usuario = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+        usuario.setEnabled(!usuario.isEnabled());
+        userRepository.save(usuario);
+        return "redirect:/backoffice/usuarios";
+    }
+
 }

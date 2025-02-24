@@ -7,14 +7,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 @Configuration
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          AuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.userDetailsService = userDetailsService;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
     }
 
     @Bean
@@ -35,23 +39,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeHttpRequests(auth -> auth
+            .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/backoffice/login").permitAll()
                 .requestMatchers("/backoffice/usuarios/**").hasRole("ADMIN")
                 .requestMatchers("/backoffice/**").hasAnyRole("ADMIN", "ESTOQUISTA")
                 .anyRequest().permitAll()
-                )
-                .formLogin(form -> form
+            )
+            .formLogin(form -> form
                 .loginPage("/backoffice/login")
                 .loginProcessingUrl("/backoffice-login")
                 .defaultSuccessUrl("/backoffice", true)
+                .failureHandler(customAuthenticationFailureHandler) // Aqui usamos o handler customizado
                 .permitAll()
-                )
-                .logout(logout -> logout
+            )
+            .logout(logout -> logout
                 .logoutUrl("/backoffice/logout")
                 .logoutSuccessUrl("/backoffice/login")
                 .permitAll()
-                );
+            );
 
         return http.build();
     }

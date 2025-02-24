@@ -46,14 +46,15 @@
                     <a th:href="@{'/backoffice/usuarios/alterar/' + ${usuario.id}}">Alterar</a>
                 </td>
 
-                <!-- Link de Habilitar/Inabilitar -->
+                <!-- Link de Habilitar/Inabilitar com confirmação -->
                 <td>
                     <!-- Se o usuário listado for o mesmo que está logado, exibe um traço -->
                     <span th:if="${usuario.email} == ${loggedInUser}">-</span>
-                    <!-- Caso contrário, mostra "Inabilitar" se ativo ou "Reativar" se inativo -->
+                    <!-- Caso contrário, exibe o link para alterar o status -->
                     <a th:if="${usuario.email} != ${loggedInUser}"
                        href="javascript:void(0)"
-                       th:text="${usuario.enabled ? 'Inabilitar' : 'Reativar'}">
+                       th:text="${usuario.enabled ? 'Inabilitar' : 'Reativar'}"
+                       th:onclick="'confirmToggle(' + ${usuario.id} + ')'">
                     </a>
                 </td>
             </tr>
@@ -62,5 +63,18 @@
 
     <br>
     <a th:href="@{/backoffice}">Voltar ao Backoffice</a>
+
+    <!-- Script para confirmar e enviar a alteração do status -->
+    <script>
+        function confirmToggle(id) {
+            if (confirm("Você realmente deseja alterar o status do usuário?")) {
+                var form = document.createElement('form');
+                form.method = 'post';
+                form.action = '/backoffice/usuarios/toggle/' + id;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+    </script>
 </body>
 </html>
