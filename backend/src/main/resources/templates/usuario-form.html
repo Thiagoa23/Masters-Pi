@@ -33,7 +33,8 @@
             </div>
             <div>
                 <label>Email:</label>
-                <input type="email" name="email" th:value="${usuario.email}" th:disabled="${usuario.id != null}" required />
+                <input type="email" name="email" th:value="${usuario.email}" th:readonly="${usuario.id != null}" required />
+
             </div>
             <div>
                 <label>Nova Senha:</label>
@@ -69,14 +70,11 @@
                     if (passwordInput.value !== confirmPasswordInput.value) {
                         event.preventDefault();
                         senhaError.style.display = "block";
-                        return;
                     }
-                    // Criptografa
-                    passwordInput.value = CryptoJS.SHA256(passwordInput.value).toString();
-                    confirmPasswordInput.value = CryptoJS.SHA256(confirmPasswordInput.value).toString();
                 }
             });
         </script>
+
 
         <!-- limitar dígitos e aplicar máscara ao CPF -->
         <script>

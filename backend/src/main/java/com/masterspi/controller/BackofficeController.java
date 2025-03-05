@@ -1,7 +1,10 @@
 package com.masterspi.controller;
 
+import com.masterspi.model.Produto;
 import com.masterspi.model.User;
-import com.masterspi.repository.UserRepository;
+import com.masterspi.service.AccessControlService;
+import com.masterspi.service.ProdutoService;
+import com.masterspi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,12 +12,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Controller
 public class BackofficeController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
+    @Autowired
+    private AccessControlService accessControlService;
+
+    @Autowired
+    private ProdutoService produtoService;
 
     // Rota Login
     @GetMapping("/backoffice/login")
@@ -27,31 +37,46 @@ public class BackofficeController {
     public String showBackofficeHome(Model model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
         model.addAttribute("isAdmin", isAdmin);
         return "backoffice";
     }
 
-    //Rota Erro 403
+    // Rota Erro 403
     @GetMapping("/403")
     public String acessoNegado() {
         return "403";
     }
 
-    // Listagem e Filtro
+    // Listagem de usuários
     @GetMapping("/backoffice/usuarios")
     public String listarUsuarios(@RequestParam(value = "nome", required = false) String nome, Model model) {
-        List<User> usuarios = (nome != null && !nome.isEmpty())
-                ? userRepository.findByNomeContainingIgnoreCase(nome)
-                : userRepository.findAll();
-
-        // salva usuario logado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInUser = (auth != null) ? auth.getName() : "";
+        User usuarioLogado = userService.buscarPorEmail(auth.getName()).orElseThrow();
 
+        List<User> usuarios = userService.listarUsuarios(nome);
         model.addAttribute("usuarios", usuarios);
-        model.addAttribute("loggedInUser", loggedInUser);
+        model.addAttribute("loggedInUser", usuarioLogado.getEmail());
         return "usuarios";
+    }
+
+    @GetMapping("/backoffice/produtos")
+    public String listarProdutos(
+            @RequestParam(value = "nome", required = false) String nome,
+            @RequestParam(value = "pagina", defaultValue = "1") int pagina,
+            Model model) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
+        Page<Produto> paginaProdutos = produtoService.listarProdutos(nome, pagina);
+
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("produtos", paginaProdutos.getContent());
+        model.addAttribute("paginaAtual", pagina);
+        model.addAttribute("totalPaginas", paginaProdutos.getTotalPages());
+
+        return "produtos";
     }
 
     // Rota Cadastro
@@ -64,7 +89,7 @@ public class BackofficeController {
     // Rota Alterar
     @GetMapping("/backoffice/usuarios/alterar/{id}")
     public String alterarUsuario(@PathVariable Long id, Model model) {
-        User usuario = userRepository.findById(id)
+        User usuario = userService.buscarPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -78,10 +103,7 @@ public class BackofficeController {
     // Rota para ativar/inativar usuário
     @PostMapping("/backoffice/usuarios/toggle/{id}")
     public String toggleUsuario(@PathVariable Long id) {
-        User usuario = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-        usuario.setEnabled(!usuario.isEnabled());
-        userRepository.save(usuario);
+        userService.alterarStatusUsuario(id);
         return "redirect:/backoffice/usuarios";
     }
 
@@ -91,63 +113,18 @@ public class BackofficeController {
             @RequestParam(required = false) String password,
             @RequestParam(required = false) String confirmPassword,
             Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInUserEmail = (auth != null) ? auth.getName() : "";
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String loggedInUserEmail = (auth != null) ? auth.getName() : "";
 
-        // Validação do CPF
-        if (!com.masterspi.util.CPFValidator.isValidCPF(usuario.getCpf())) {
-            model.addAttribute("error", "CPF inválido!");
+            userService.salvarUsuario(usuario, password, confirmPassword, loggedInUserEmail);
+
+            return "redirect:/backoffice/usuarios";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("usuario", usuario);
             return "usuario-form";
         }
-
-        if (usuario.getId() != null) { //Alterar
-            User usuarioExistente = userRepository.findById(usuario.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
-            // Mantém o email inalterado
-            usuario.setEmail(usuarioExistente.getEmail());
-            // Mantém o status
-            usuario.setEnabled(usuarioExistente.isEnabled());
-            //mantem o grupo
-            if (usuarioExistente.getEmail().equals(loggedInUserEmail)) {
-                usuario.setRole(usuarioExistente.getRole());
-            }
-
-            // usuário logado não pode alterar seu proprio grupo
-            if (usuario.getEmail().equals(loggedInUserEmail)) {
-                usuario.setRole(usuarioExistente.getRole());
-            }
-
-            // Validação de Senha
-            if (password != null && !password.isEmpty()) {
-                if (!password.equals(confirmPassword)) {
-                    model.addAttribute("error", "As senhas não coincidem!");
-                    return "usuario-form";
-                }
-                usuario.setPassword(password);
-            } else {
-                usuario.setPassword(usuarioExistente.getPassword());
-            }
-        } else { // Incluir
-
-            //verificação email
-            if (userRepository.findByEmail(usuario.getEmail()).isPresent()) {
-                model.addAttribute("error", "Já existe um usuário cadastrado com este email!");
-                model.addAttribute("usuario", usuario);
-                return "usuario-form";
-            }
-
-            //validação senha
-            if (password == null || password.isEmpty() || !password.equals(confirmPassword)) {
-                model.addAttribute("error", "As senhas não coincidem ou não foram preenchidas!");
-                model.addAttribute("usuario", usuario);
-                return "usuario-form";
-            }
-            usuario.setPassword(password);
-            usuario.setEnabled(true);
-        }
-
-        userRepository.save(usuario);
-        return "redirect:/backoffice/usuarios";
     }
+
 }

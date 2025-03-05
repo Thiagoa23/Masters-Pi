@@ -32,25 +32,17 @@
             </thead>
             <tbody>
                 <tr th:each="usuario : ${usuarios}">
-                    <td th:text="${usuario.nome}">Nome</td>
-                    <td th:text="${usuario.email}">Email</td>
-
-                    <td th:text="${usuario.enabled ? 'Ativo' : 'Inativo'}">Status</td>
-                    <td th:text="${usuario.role}">Grupo</td>
-
-
+                    <td th:text="${usuario.nome}"></td>
+                    <td th:text="${usuario.email}"></td>
+                    <td th:text="${usuario.enabled ? '🟢 Ativo' : '🔴 Inativo'}"></td> <!-- 🔥 Ajuste aqui -->
+                    <td th:text="${usuario.role}"></td>
+                    <td><a th:href="@{/backoffice/usuarios/alterar/{id}(id=${usuario.id})}">Alterar</a></td>
                     <td>
-                        <a th:href="@{'/backoffice/usuarios/alterar/' + ${usuario.id}}">Alterar</a>
-                    </td>
-
-
-                    <td>
-                        <span th:if="${usuario.email} == ${loggedInUser}">-</span>
-
                         <a th:if="${usuario.email} != ${loggedInUser}"
                            href="javascript:void(0)"
-                           th:text="${usuario.enabled ? 'Inabilitar' : 'Reativar'}"
+                           th:title="${usuario.enabled ? 'Inativar Usuário' : 'Ativar Usuário'}"
                            th:onclick="'confirmToggle(' + ${usuario.id} + ')'">
+                            <span th:text="${usuario.enabled ? '🔴 Desativar' : '🟢 Ativar'}"></span>
                         </a>
                     </td>
                 </tr>

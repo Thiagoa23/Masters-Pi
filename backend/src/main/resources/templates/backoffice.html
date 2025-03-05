@@ -6,10 +6,10 @@
 </head>
 <body>
     <h1>Tela Backoffice</h1>
-    
+
     <nav>
         <ul>
-            <li><a th:href="@{/produtos}">Lista de Produtos</a></li>
+            <li><a th:href="@{/backoffice/produtos}">📦 Listar Produtos</a></li>
             <li th:if="${isAdmin}"><a th:href="@{/backoffice/usuarios}">Lista de Usuários</a></li>
         </ul>
     </nav>
