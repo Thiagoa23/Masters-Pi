@@ -60,6 +60,7 @@ public class BackofficeController {
         return "usuarios";
     }
 
+    // Listagem de produtos
     @GetMapping("/backoffice/produtos")
     public String listarProdutos(
             @RequestParam(value = "nome", required = false) String nome,
@@ -126,5 +127,4 @@ public class BackofficeController {
             return "usuario-form";
         }
     }
-
 }
