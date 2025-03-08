@@ -5,6 +5,7 @@ import com.masterspi.model.User;
 import com.masterspi.service.AccessControlService;
 import com.masterspi.service.ProdutoService;
 import com.masterspi.service.UserService;
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class BackofficeController {
@@ -87,6 +89,13 @@ public class BackofficeController {
         return "usuario-form";
     }
 
+    // Rota para cadastro de produto 
+    @GetMapping("/backoffice/produtos/incluir")
+    public String exibirFormularioCadastro(Model model) {
+        model.addAttribute("produto", new Produto());
+        return "produto-form";
+    }
+
     // Rota Alterar
     @GetMapping("/backoffice/usuarios/alterar/{id}")
     public String alterarUsuario(@PathVariable Long id, Model model) {
@@ -127,4 +136,22 @@ public class BackofficeController {
             return "usuario-form";
         }
     }
+
+    @PostMapping("/backoffice/produtos/salvar")
+    public String salvarProduto(
+            @RequestParam String nome,
+            @RequestParam double avaliacao,
+            @RequestParam String descricao,
+            @RequestParam BigDecimal valor,
+            @RequestParam int estoque,
+            @RequestParam(required = false) Boolean ativo,
+            @RequestParam("imagens") MultipartFile[] imagens, 
+            @RequestParam String imagemPrincipal) {
+
+        boolean statusAtivo = (ativo != null) ? ativo : false;
+
+        produtoService.salvarProduto(nome, avaliacao, descricao, valor, estoque, statusAtivo, imagens, imagemPrincipal);
+        return "redirect:/backoffice/produtos";
+    }
+
 }

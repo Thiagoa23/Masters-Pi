@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Cadastrar Produto</title>
+        <style>
+            .error-message {
+                color: red;
+                margin-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>Cadastrar Produto</h1>
+
+        <div th:if="${error}" style="color: red;">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:action="@{/backoffice/produtos/salvar}" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="codigo" th:value="${produto.codigo}" />
+
+            <div>
+                <label>Nome do Produto:</label>
+                <input type="text" name="nome" th:value="${produto.nome}" maxlength="200" required />
+            </div>
+
+            <div>
+                <label>Descrição:</label>
+                <textarea name="descricao" maxlength="2000" required th:text="${produto.descricao}"></textarea>
+            </div>
+
+            <div>
+                <label>Preço:</label>
+                <input type="number" name="valor" step="0.01" min="0" th:value="${produto.valor}" required />
+            </div>
+
+            <div>
+                <label>Quantidade em Estoque:</label>
+                <input type="number" name="estoque" min="0" th:value="${produto.estoque}" required />
+            </div>
+
+            <div>
+                <label>Imagens do Produto:</label>
+                <input type="file" name="imagens" multiple accept="image/*" />
+            </div>
+
+            <div>
+                <label>Imagem Principal:</label>
+                <div id="previewContainer">
+                    <!-- Os botões de seleção serão gerados dinamicamente aqui -->
+                </div>
+            </div>
+
+            <div>
+                <label>Avaliação:</label>
+                <select name="avaliacao" required>
+                    <option value="1" th:selected="${produto.avaliacao == 1}">1.0</option>
+                    <option value="1.5" th:selected="${produto.avaliacao == 1.5}">1.5</option>
+                    <option value="2" th:selected="${produto.avaliacao == 2}">2.0</option>
+                    <option value="2.5" th:selected="${produto.avaliacao == 2.5}">2.5</option>
+                    <option value="3" th:selected="${produto.avaliacao == 3}">3.0</option>
+                    <option value="3.5" th:selected="${produto.avaliacao == 3.5}">3.5</option>
+                    <option value="4" th:selected="${produto.avaliacao == 4}">4.0</option>
+                    <option value="4.5" th:selected="${produto.avaliacao == 4.5}">4.5</option>
+                    <option value="5" th:selected="${produto.avaliacao == 5}">5.0</option>
+                </select>
+            </div>
+
+
+            <button type="submit">Salvar</button>
+            <a th:href="@{/backoffice/produtos}">Cancelar</a>
+        </form>
+
+        <script>
+            document.querySelector("input[name='imagens']").addEventListener("change", function (event) {
+                let previewContainer = document.getElementById("previewContainer");
+                previewContainer.innerHTML = "";
+
+                for (let i = 0; i < event.target.files.length; i++) {
+                    let file = event.target.files[i];
+
+                    let radio = document.createElement("input");
+                    radio.type = "radio";
+                    radio.name = "imagemPrincipal";
+                    radio.value = file.name;
+
+                    let label = document.createElement("label");
+                    label.textContent = file.name;
+
+                    previewContainer.appendChild(radio);
+                    previewContainer.appendChild(label);
+                    previewContainer.appendChild(document.createElement("br"));
+                }
+
+                if (previewContainer.firstChild) {
+                    previewContainer.firstChild.checked = true; // Define a primeira imagem como padrão
+                }
+            });
+        </script>
+
+    </body>
+</html>
