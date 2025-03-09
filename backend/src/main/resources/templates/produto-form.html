@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Cadastrar Produto</title>
+        <title>Gerenciar Produto</title>
         <style>
             .error-message {
                 color: red;
@@ -12,7 +12,7 @@
     </head>
     <body>
 
-        <h1>Cadastrar Produto</h1>
+        <h1 th:text="${produto.codigo != null ? 'Editar Produto' : 'Cadastrar Produto'}"></h1>
 
         <div th:if="${error}" style="color: red;">
             <p th:text="${error}"></p>
@@ -42,6 +42,11 @@
             </div>
 
             <div>
+                <label>Ativo:</label>
+                <input type="checkbox" name="ativo" th:checked="${produto.ativo}" />
+            </div>
+
+            <div>
                 <label>Imagens do Produto:</label>
                 <input type="file" name="imagens" multiple accept="image/*" />
             </div>
@@ -49,7 +54,11 @@
             <div>
                 <label>Imagem Principal:</label>
                 <div id="previewContainer">
-                    <!-- Os botões de seleção serão gerados dinamicamente aqui -->
+                    <!-- Exibir imagens já cadastradas -->
+                    <div th:each="img : ${produto.imagens}">
+                        <input type="radio" name="imagemPrincipal" th:value="${img}" th:checked="${img == produto.imagemPrincipal}" />
+                        <label th:text="${img}"></label>
+                    </div>
                 </div>
             </div>
 
@@ -67,7 +76,6 @@
                     <option value="5" th:selected="${produto.avaliacao == 5}">5.0</option>
                 </select>
             </div>
-
 
             <button type="submit">Salvar</button>
             <a th:href="@{/backoffice/produtos}">Cancelar</a>

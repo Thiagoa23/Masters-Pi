@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +26,10 @@ public class ProdutoService {
     public ProdutoService(ProdutoRepository produtoRepository, ImagemStorageStrategy imagemStorageStrategy) {
         this.produtoRepository = produtoRepository;
         this.imagemStorageStrategy = imagemStorageStrategy;
+    }
+
+    public Optional<Produto> buscarPorCodigo(Long codigo) {
+        return produtoRepository.findById(codigo);
     }
 
     public Page<Produto> listarProdutos(String nome, int pagina) {
@@ -50,10 +54,10 @@ public class ProdutoService {
 
         for (MultipartFile imagem : imagens) {
             try {
-                String nomeArquivo = imagem.getOriginalFilename(); // Obtém o nome do arquivo
-                byte[] bytesImagem = imagem.getBytes(); // Converte para byte[]
+                String nomeArquivo = imagem.getOriginalFilename();
+                byte[] bytesImagem = imagem.getBytes();
 
-                String caminho = imagemStorageStrategy.salvarImagem(nomeArquivo, bytesImagem).toString(); // Converte Path para String
+                String caminho = imagemStorageStrategy.salvarImagem(nomeArquivo, bytesImagem).toString();
                 caminhosImagens.add(caminho);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao salvar imagem", e);
@@ -66,4 +70,38 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    public Produto alterarProduto(Long id, String nome, double avaliacao, String descricao,
+            BigDecimal valor, int estoque, boolean ativo,
+            List<MultipartFile> imagens, String imagemPrincipal) {
+
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+
+        produto.setNome(nome);
+        produto.setAvaliacao(avaliacao);
+        produto.setDescricao(descricao);
+        produto.setValor(valor);
+        produto.setEstoque(estoque);
+        produto.setAtivo(ativo);
+
+        if (imagens != null && !imagens.isEmpty()) {
+            List<String> caminhosImagens = new ArrayList<>();
+            for (MultipartFile imagem : imagens) {
+                try {
+                    String nomeArquivo = imagem.getOriginalFilename();
+                    byte[] bytesImagem = imagem.getBytes();
+                    String caminho = imagemStorageStrategy.salvarImagem(nomeArquivo, bytesImagem).toString();
+                    caminhosImagens.add(caminho);
+                } catch (IOException e) {
+                    throw new RuntimeException("Erro ao salvar imagem", e);
+                }
+            }
+            produto.setImagens(caminhosImagens);
+        }
+
+        // Atualiza a imagem principal
+        produto.setImagemPrincipal(imagemPrincipal);
+
+        return produtoRepository.save(produto);
+    }
 }

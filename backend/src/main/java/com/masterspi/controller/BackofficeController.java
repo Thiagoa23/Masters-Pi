@@ -6,6 +6,7 @@ import com.masterspi.service.AccessControlService;
 import com.masterspi.service.ProdutoService;
 import com.masterspi.service.UserService;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -96,7 +97,7 @@ public class BackofficeController {
         return "produto-form";
     }
 
-    // Rota Alterar
+    // Rota Alterar usuario
     @GetMapping("/backoffice/usuarios/alterar/{id}")
     public String alterarUsuario(@PathVariable Long id, Model model) {
         User usuario = userService.buscarPorId(id)
@@ -108,6 +109,16 @@ public class BackofficeController {
         model.addAttribute("usuario", usuario);
         model.addAttribute("loggedInUser", loggedInUser);
         return "usuario-form";
+    }
+
+    // Rota Alterar produto
+    @GetMapping("/backoffice/produtos/alterar/{codigo}")
+    public String alterarProduto(@PathVariable Long codigo, Model model) {
+        Produto produto = produtoService.buscarPorCodigo(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+
+        model.addAttribute("produto", produto);
+        return "produto-form"; // Reutilizando a tela de cadastro
     }
 
     // Rota para ativar/inativar usuário
@@ -137,20 +148,32 @@ public class BackofficeController {
         }
     }
 
+    // Rota para salvar produto
     @PostMapping("/backoffice/produtos/salvar")
     public String salvarProduto(
+            @RequestParam(required = false) Long codigo, // Agora usa código
             @RequestParam String nome,
             @RequestParam double avaliacao,
             @RequestParam String descricao,
             @RequestParam BigDecimal valor,
             @RequestParam int estoque,
             @RequestParam(required = false) Boolean ativo,
-            @RequestParam("imagens") MultipartFile[] imagens, 
-            @RequestParam String imagemPrincipal) {
+            @RequestParam("imagens") List<MultipartFile> imagens,
+            @RequestParam(required = false) String imagemPrincipal) {
 
         boolean statusAtivo = (ativo != null) ? ativo : false;
 
-        produtoService.salvarProduto(nome, avaliacao, descricao, valor, estoque, statusAtivo, imagens, imagemPrincipal);
+        // Conversão explícita da lista para array
+        MultipartFile[] imagensArray = imagens.toArray(new MultipartFile[0]);
+
+        if (codigo == null) {
+            // Cadastro de novo produto
+            produtoService.salvarProduto(nome, avaliacao, descricao, valor, estoque, statusAtivo, imagensArray, imagemPrincipal);
+        } else {
+            // Edição de produto existente
+            produtoService.alterarProduto(codigo, nome, avaliacao, descricao, valor, estoque, statusAtivo, Arrays.asList(imagensArray), imagemPrincipal);
+        }
+
         return "redirect:/backoffice/produtos";
     }
 

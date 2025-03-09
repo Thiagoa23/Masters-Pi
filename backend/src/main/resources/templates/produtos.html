@@ -40,7 +40,7 @@
                 <td th:text="${produto.valor}"></td>
                 <td th:text="${produto.ativo ? '🟢 Ativo' : '🔴 Inativo'}"></td>
                 <td>
-                    <a th:href="@{/backoffice/produtos/alterar/{id}(id=${produto.codigo})}">✏ Alterar</a> |
+                    <a th:href="@{/backoffice/produtos/alterar/{codigo}(codigo=${produto.codigo})}">✏ Alterar</a> |
                     <a href="javascript:void(0)" th:onclick="'confirmToggle(' + ${produto.codigo} + ')'">
                         <span th:text="${produto.ativo ? '🔴 Desativar' : '🟢 Ativar'}"></span>
                     </a> |

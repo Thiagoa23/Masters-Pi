@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.masterspi.strategy;
 
 import org.springframework.stereotype.Component;
@@ -21,15 +17,23 @@ public class LocalImagemStorageStrategy implements ImagemStorageStrategy {
     public Path salvarImagem(String nomeArquivo, byte[] dadosImagem) {
         try {
             Path diretorio = Paths.get(DIRETORIO_IMAGENS);
-            if (!Files.exists(diretorio)) {
-                Files.createDirectories(diretorio);
-            }
+
+            // Garante que o diretório existe antes de salvar a imagem
+            Files.createDirectories(diretorio);
 
             Path caminhoArquivo = diretorio.resolve(nomeArquivo);
-            Files.write(caminhoArquivo, dadosImagem);
+
+            // Verifica se o arquivo já existe e gera um novo nome se necessário
+            if (Files.exists(caminhoArquivo)) {
+                caminhoArquivo = diretorio.resolve(System.currentTimeMillis() + "_" + nomeArquivo);
+            }
+
+            // Salva o arquivo
+            Files.write(caminhoArquivo, dadosImagem, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
             return caminhoArquivo;
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar imagem", e);
+            throw new RuntimeException("Erro ao salvar imagem: " + e.getMessage(), e);
         }
     }
 
@@ -37,9 +41,13 @@ public class LocalImagemStorageStrategy implements ImagemStorageStrategy {
     public void deletarImagem(String nomeArquivo) {
         try {
             Path caminhoArquivo = Paths.get(DIRETORIO_IMAGENS, nomeArquivo);
-            Files.deleteIfExists(caminhoArquivo);
+
+            // Verifica se o arquivo existe antes de tentar deletar
+            if (Files.exists(caminhoArquivo)) {
+                Files.delete(caminhoArquivo);
+            }
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao deletar imagem", e);
+            throw new RuntimeException("Erro ao deletar imagem: " + e.getMessage(), e);
         }
     }
 
