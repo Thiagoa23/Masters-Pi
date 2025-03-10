@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Alterar Estoque</title>
+    </head>
+    <body>
+
+        <h1>Alterar Estoque do Produto</h1>
+
+        <form th:action="@{/backoffice/produtos/estoquista-salvar}" method="post">
+            <input type="hidden" name="codigo" th:value="${produto.codigo}" />
+
+            <p>Nome: <span th:text="${produto.nome}"></span></p>
+            <p>Estoque atual: <span th:text="${produto.estoque}"></span></p>
+
+            <label>Novo Estoque:</label>
+            <input type="number" name="estoque" min="0" th:value="${produto.estoque}" />
+
+            <button type="submit">Salvar</button>
+            <a th:href="@{/backoffice/produtos}">Cancelar</a>
+        </form>
+
+    </body>
+</html>

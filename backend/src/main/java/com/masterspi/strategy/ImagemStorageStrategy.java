@@ -4,6 +4,7 @@
  */
 package com.masterspi.strategy;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
@@ -11,7 +12,10 @@ import java.nio.file.Path;
  * @author andra
  */
 public interface ImagemStorageStrategy {
-    Path salvarImagem(String nomeArquivo, byte[] dadosImagem);
-    void deletarImagem(String nomeArquivo);
-    Path obterCaminhoImagem(String nomeArquivo);
+
+    Path salvarImagem(String nomeArquivo, byte[] dadosImagem) throws IOException;
+
+    void deletarImagem(String nomeArquivo) throws IOException;    // se também quiser permitir exceção
+
+    Path obterCaminhoImagem(String nomeArquivo) throws IOException; // idem
 }

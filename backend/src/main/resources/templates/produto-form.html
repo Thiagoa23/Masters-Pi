@@ -4,9 +4,10 @@
         <meta charset="UTF-8">
         <title>Gerenciar Produto</title>
         <style>
-            .error-message {
-                color: red;
-                margin-top: 5px;
+            img.preview {
+                max-width: 150px; /* Ajuste conforme necessário */
+                margin: 5px 0;
+                display: block;
             }
         </style>
     </head>
@@ -14,66 +15,67 @@
 
         <h1 th:text="${produto.codigo != null ? 'Editar Produto' : 'Cadastrar Produto'}"></h1>
 
-        <div th:if="${error}" style="color: red;">
-            <p th:text="${error}"></p>
-        </div>
-
         <form th:action="@{/backoffice/produtos/salvar}" method="post" enctype="multipart/form-data">
             <input type="hidden" name="codigo" th:value="${produto.codigo}" />
 
+            <!-- Campos do produto... -->
             <div>
                 <label>Nome do Produto:</label>
-                <input type="text" name="nome" th:value="${produto.nome}" maxlength="200" required />
+                <input type="text" name="nome" th:value="${produto.nome}" />
             </div>
-
             <div>
                 <label>Descrição:</label>
-                <textarea name="descricao" maxlength="2000" required th:text="${produto.descricao}"></textarea>
+                <textarea name="descricao" th:text="${produto.descricao}"></textarea>
             </div>
-
             <div>
                 <label>Preço:</label>
-                <input type="number" name="valor" step="0.01" min="0" th:value="${produto.valor}" required />
+                <input type="number" name="valor" step="0.01" th:value="${produto.valor}" />
             </div>
-
             <div>
-                <label>Quantidade em Estoque:</label>
-                <input type="number" name="estoque" min="0" th:value="${produto.estoque}" required />
+                <label>Estoque:</label>
+                <input type="number" name="estoque" min="0" th:value="${produto.estoque}" />
             </div>
-
             <div>
                 <label>Ativo:</label>
                 <input type="checkbox" name="ativo" th:checked="${produto.ativo}" />
             </div>
 
             <div>
-                <label>Imagens do Produto:</label>
-                <input type="file" name="imagens" multiple accept="image/*" />
-            </div>
-
-            <div>
-                <label>Imagem Principal:</label>
-                <div id="previewContainer">
-                    <!-- Exibir imagens já cadastradas -->
-                    <div th:each="img : ${produto.imagens}">
-                        <input type="radio" name="imagemPrincipal" th:value="${img}" th:checked="${img == produto.imagemPrincipal}" />
-                        <label th:text="${img}"></label>
-                    </div>
+                <!-- Itera sobre cada imagem -->
+                <div th:each="img : ${produto.imagens}" style="display: inline-block; margin: 10px; text-align: center;">
+                    <img th:src="@{/imagens/{filename}(filename=${img})}" width="100" />
+                    <br/>
+                    <input type="radio"
+                           name="imagemPrincipal"
+                           th:value="${img}"
+                           th:checked="${img == produto.imagemPrincipal}" />
                 </div>
             </div>
 
+
+
+            <!-- Upload de novas imagens -->
+            <div>
+                <label>Novas imagens:</label>
+                <!-- IMPORTANTE: id="inputNovasImagens" para o JS achar -->
+                <input id="inputNovasImagens" type="file" name="imagens" multiple accept="image/*" />
+            </div>
+
+            <!-- Div para pré-visualizar as novas imagens -->
+            <div id="previewNovasImagens"></div>
+
             <div>
                 <label>Avaliação:</label>
-                <select name="avaliacao" required>
-                    <option value="1" th:selected="${produto.avaliacao == 1}">1.0</option>
+                <select name="avaliacao">
+                    <option value="1"   th:selected="${produto.avaliacao == 1}">1.0</option>
                     <option value="1.5" th:selected="${produto.avaliacao == 1.5}">1.5</option>
-                    <option value="2" th:selected="${produto.avaliacao == 2}">2.0</option>
+                    <option value="2"   th:selected="${produto.avaliacao == 2}">2.0</option>
                     <option value="2.5" th:selected="${produto.avaliacao == 2.5}">2.5</option>
-                    <option value="3" th:selected="${produto.avaliacao == 3}">3.0</option>
+                    <option value="3"   th:selected="${produto.avaliacao == 3}">3.0</option>
                     <option value="3.5" th:selected="${produto.avaliacao == 3.5}">3.5</option>
-                    <option value="4" th:selected="${produto.avaliacao == 4}">4.0</option>
+                    <option value="4"   th:selected="${produto.avaliacao == 4}">4.0</option>
                     <option value="4.5" th:selected="${produto.avaliacao == 4.5}">4.5</option>
-                    <option value="5" th:selected="${produto.avaliacao == 5}">5.0</option>
+                    <option value="5"   th:selected="${produto.avaliacao == 5}">5.0</option>
                 </select>
             </div>
 
@@ -82,28 +84,44 @@
         </form>
 
         <script>
-            document.querySelector("input[name='imagens']").addEventListener("change", function (event) {
-                let previewContainer = document.getElementById("previewContainer");
-                previewContainer.innerHTML = "";
+            document.getElementById("inputNovasImagens").addEventListener("change", function (event) {
+                const previewContainer = document.getElementById("previewNovasImagens");
+                previewContainer.innerHTML = ""; // limpa antes de mostrar novas
 
-                for (let i = 0; i < event.target.files.length; i++) {
-                    let file = event.target.files[i];
+                const arquivos = event.target.files;
 
-                    let radio = document.createElement("input");
-                    radio.type = "radio";
-                    radio.name = "imagemPrincipal";
-                    radio.value = file.name;
+                for (let i = 0; i < arquivos.length; i++) {
+                    const file = arquivos[i];
 
-                    let label = document.createElement("label");
-                    label.textContent = file.name;
+                    // Cria um FileReader para ler o arquivo localmente
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        // e.target.result é um dataURL base64 (ex: "data:image/png;base64,...")
 
-                    previewContainer.appendChild(radio);
-                    previewContainer.appendChild(label);
-                    previewContainer.appendChild(document.createElement("br"));
-                }
+                        // Cria elemento <img> para pré-visualizar
+                        const imgEl = document.createElement("img");
+                        imgEl.src = e.target.result;
+                        imgEl.width = 100; // ou 150, como preferir
 
-                if (previewContainer.firstChild) {
-                    previewContainer.firstChild.checked = true; // Define a primeira imagem como padrão
+                        // Cria radio para definir principal (se quiser)
+                        const radioEl = document.createElement("input");
+                        radioEl.type = "radio";
+                        radioEl.name = "imagemPrincipal";
+                        radioEl.value = file.name;
+
+                        // Cria um label só para exibir o nome
+                        const labelEl = document.createElement("label");
+                        labelEl.textContent = file.name;
+
+                        // Adiciona tudo no previewContainer
+                        previewContainer.appendChild(imgEl);
+                        previewContainer.appendChild(radioEl);
+                        previewContainer.appendChild(labelEl);
+                        previewContainer.appendChild(document.createElement("br"));
+                    };
+
+                    // Lê o arquivo como DataURL
+                    reader.readAsDataURL(file);
                 }
             });
         </script>

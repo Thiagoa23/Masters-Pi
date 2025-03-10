@@ -1,51 +1,46 @@
 package com.masterspi.strategy;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.UUID;
 
-/**
- *
- * @author andra
- */
-@Component
+@Service
 public class LocalImagemStorageStrategy implements ImagemStorageStrategy {
 
-    private static final String DIRETORIO_IMAGENS = "imagens/produtos/";
+    // Diretório relativo no projeto onde as imagens serão salvas
+    private final String uploadDir = "uploads";
 
     @Override
-    public Path salvarImagem(String nomeArquivo, byte[] dadosImagem) {
-        try {
-            Path diretorio = Paths.get(DIRETORIO_IMAGENS);
+    public Path salvarImagem(String nomeArquivo, byte[] conteudo) throws IOException {
+        Path pastaUploads = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Files.createDirectories(pastaUploads);
 
-            // Garante que o diretório existe antes de salvar a imagem
-            Files.createDirectories(diretorio);
+        // Remove ou substitui espaços e caracteres problemáticos
+        String nomeArquivoSanitizado = nomeArquivo.replaceAll("[^a-zA-Z0-9.\\-]", "_");
 
-            Path caminhoArquivo = diretorio.resolve(nomeArquivo);
+        // Gera um nome único (UUID + nome sanitizado)
+        String novoNomeArquivo = UUID.randomUUID().toString() + "_" + nomeArquivoSanitizado;
 
-            // Verifica se o arquivo já existe e gera um novo nome se necessário
-            if (Files.exists(caminhoArquivo)) {
-                caminhoArquivo = diretorio.resolve(System.currentTimeMillis() + "_" + nomeArquivo);
-            }
+        // Caminho completo no sistema de arquivos
+        Path caminhoArquivo = pastaUploads.resolve(novoNomeArquivo);
 
-            // Salva o arquivo
-            Files.write(caminhoArquivo, dadosImagem, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(caminhoArquivo, conteudo);
 
-            return caminhoArquivo;
-        } catch (IOException e) {
-            throw new RuntimeException("Erro ao salvar imagem: " + e.getMessage(), e);
-        }
+        // Retorna apenas o NOME do arquivo, sem "uploads/"
+        return Paths.get(novoNomeArquivo);
     }
 
     @Override
     public void deletarImagem(String nomeArquivo) {
         try {
-            Path caminhoArquivo = Paths.get(DIRETORIO_IMAGENS, nomeArquivo);
-
-            // Verifica se o arquivo existe antes de tentar deletar
-            if (Files.exists(caminhoArquivo)) {
-                Files.delete(caminhoArquivo);
-            }
+            // Obter o caminho absoluto do arquivo, considerando que nomeArquivo pode ser "uploads/uuid_nomeOriginal.ext"
+            Path pastaUploads = Paths.get(uploadDir).toAbsolutePath().normalize();
+            // Se o nomeArquivo já incluir "uploads", remova-o para evitar duplicidade
+            String nomeArquivoLimpo = nomeArquivo.replaceFirst("^uploads[/\\\\]", "");
+            Path caminhoArquivo = pastaUploads.resolve(nomeArquivoLimpo);
+            Files.deleteIfExists(caminhoArquivo);
         } catch (IOException e) {
             throw new RuntimeException("Erro ao deletar imagem: " + e.getMessage(), e);
         }
@@ -53,6 +48,10 @@ public class LocalImagemStorageStrategy implements ImagemStorageStrategy {
 
     @Override
     public Path obterCaminhoImagem(String nomeArquivo) {
-        return Paths.get(DIRETORIO_IMAGENS, nomeArquivo);
+        // Se o nomeArquivo já incluir o diretório "uploads", pode ser retornado diretamente ou resolvido
+        Path pastaUploads = Paths.get(uploadDir).toAbsolutePath().normalize();
+        String nomeArquivoLimpo = nomeArquivo.replaceFirst("^uploads[/\\\\]", "");
+        return pastaUploads.resolve(nomeArquivoLimpo);
     }
+
 }

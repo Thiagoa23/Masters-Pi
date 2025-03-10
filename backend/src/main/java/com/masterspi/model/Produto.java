@@ -41,5 +41,5 @@ public class Produto {
     private List<String> imagens;
 
     @Column(name = "imagem_principal")
-    private String imagemPrincipal;
+    private String imagemPrincipal;  // caminho relativo da imagem principal
 }

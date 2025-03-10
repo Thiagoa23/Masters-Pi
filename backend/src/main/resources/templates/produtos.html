@@ -1,79 +1,98 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Produtos</title>
-</head>
-<body>
-    <h1>📦 Lista de Produtos</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Lista de Produtos</title>
+    </head>
+    <body>
+        <h1>📦 Lista de Produtos</h1>
 
-    <!-- Campo de Busca -->
-    <form th:action="@{/backoffice/produtos}" method="get">
-        <input type="text" name="nome" placeholder="Buscar produto..." />
-        <button type="submit">🔍 Buscar</button>
-    </form>
+        <!-- Campo de Busca -->
+        <form th:action="@{/backoffice/produtos}" method="get">
+            <input type="text" name="nome" placeholder="Buscar produto..." />
+            <button type="submit">🔍 Buscar</button>
+        </form>
 
-    <br>
+        <br>
 
-    <!-- Botão para adicionar novo produto -->
-    <a th:href="@{/backoffice/produtos/incluir}" style="font-size: 20px;">➕ Adicionar Produto</a>
+        <!-- Botão para adicionar novo produto -->
+        <a th:if="${isAdmin}"
+           th:href="@{/backoffice/produtos/incluir}"
+           style="font-size: 20px;">➕ Adicionar Produto</a>
 
-    <br><br>
 
-    <!-- Tabela de produtos -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Estoque</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="produto : ${produtos}">
-                <td th:text="${produto.codigo}"></td>
-                <td th:text="${produto.nome}"></td>
-                <td th:text="${produto.estoque}"></td>
-                <td th:text="${produto.valor}"></td>
-                <td th:text="${produto.ativo ? '🟢 Ativo' : '🔴 Inativo'}"></td>
-                <td>
-                    <a th:href="@{/backoffice/produtos/alterar/{codigo}(codigo=${produto.codigo})}">✏ Alterar</a> |
-                    <a href="javascript:void(0)" th:onclick="'confirmToggle(' + ${produto.codigo} + ')'">
-                        <span th:text="${produto.ativo ? '🔴 Desativar' : '🟢 Ativar'}"></span>
-                    </a> |
-                    <a th:href="@{/backoffice/produtos/visualizar/{id}(id=${produto.codigo})}">👁 Visualizar</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 
-    <br>
+        <br><br>
 
-    <!-- Paginação -->
-    <div>
-        <a th:if="${paginaAtual > 1}" th:href="@{/backoffice/produtos(pagina=${paginaAtual - 1})}">⬅ Anterior</a>
-        <span th:text="'Página ' + ${paginaAtual}"></span>
-        <a th:if="${paginaAtual < totalPaginas}" th:href="@{/backoffice/produtos(pagina=${paginaAtual + 1})}">Próxima ➡</a>
-    </div>
+        <!-- Tabela de produtos -->
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Estoque</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="produto : ${produtos}">
+                    <td th:text="${produto.codigo}"></td>
+                    <td th:text="${produto.nome}"></td>
+                    <td th:text="${produto.estoque}"></td>
+                    <td th:text="${produto.valor}"></td>
+                    <td th:text="${produto.ativo ? '🟢 Ativo' : '🔴 Inativo'}"></td>
+                    <td>
+                        <!-- Se for Admin, mostra todas as ações -->
+                        <span th:if="${isAdmin}">
+                            <a th:href="@{/backoffice/produtos/alterar/{codigo}(codigo=${produto.codigo})}">✏ Alterar</a> |
+                            <a href="javascript:void(0)" th:onclick="'confirmToggle(\'' + ${produto.codigo} + '\')'">
+                                <span th:text="${produto.ativo ? '🔴 Desativar' : '🟢 Ativar'}"></span>
+                            </a> |
+                            <a th:href="@{/backoffice/produtos/visualizar/{codigo}(codigo=${produto.codigo})}">👁 Visualizar</a>
+                        </span>
 
-    <br>
-    <a th:href="@{/backoffice}">⬅ Voltar ao Backoffice</a>
+                        <!-- Se for Estoquista, mostra só link de alterar estoque -->
+                        <span th:if="${isEstoquista}">
+                            <a th:href="@{/backoffice/produtos/estoquista-alterar/{codigo}(codigo=${produto.codigo})}">Alterar Estoque</a>
+                        </span>
+                    </td>
 
-    <!-- Confirmação de ativação/inativação -->
-    <script>
-        function confirmToggle(id) {
-            if (confirm("Você realmente deseja alterar o status do produto?")) {
-                var form = document.createElement('form');
-                form.method = 'post';
-                form.action = '/backoffice/produtos/toggle/' + id;
-                document.body.appendChild(form);
-                form.submit();
+
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+
+        <!-- Paginação -->
+        <div>
+            <a th:if="${paginaAtual > 1}" th:href="@{/backoffice/produtos(pagina=${paginaAtual - 1})}">⬅ Anterior</a>
+            <span th:text="'Página ' + ${paginaAtual}"></span>
+            <a th:if="${paginaAtual < totalPaginas}" th:href="@{/backoffice/produtos(pagina=${paginaAtual + 1})}">Próxima ➡</a>
+        </div>
+
+        <br>
+        <a th:href="@{/backoffice}">⬅ Voltar ao Backoffice</a>
+
+        <!-- Confirmação de ativação/inativação -->
+        <script>
+            function confirmToggle(id) {
+                if (confirm("Você realmente deseja alterar o status do produto?")) {
+                    var form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '/backoffice/produtos/toggle/' + id;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
-        }
-    </script>
+        </script>
+        <script>
+            function confirmarAlteracaoStatus() {
+                return confirm("Tem certeza que deseja alterar o status deste produto?");
+            }
+        </script>
 
-</body>
+    </body>
 </html>

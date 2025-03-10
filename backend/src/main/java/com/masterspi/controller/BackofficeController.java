@@ -68,19 +68,25 @@ public class BackofficeController {
     public String listarProdutos(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "pagina", defaultValue = "1") int pagina,
-            Model model) {
-
+            Model model
+    ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Já existente:
         boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ADMIN"));
+        // Adicione a verificação de Estoquista
+        boolean isEstoquista = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ESTOQUISTA"));
 
         Page<Produto> paginaProdutos = produtoService.listarProdutos(nome, pagina);
 
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isEstoquista", isEstoquista);
         model.addAttribute("produtos", paginaProdutos.getContent());
         model.addAttribute("paginaAtual", pagina);
         model.addAttribute("totalPaginas", paginaProdutos.getTotalPages());
+        model.addAttribute("nomeBusca", nome); // para manter o termo de busca
 
-        return "produtos";
+        return "produtos"; // seu template
     }
 
     // Rota Cadastro
@@ -126,6 +132,13 @@ public class BackofficeController {
     public String toggleUsuario(@PathVariable Long id) {
         userService.alterarStatusUsuario(id);
         return "redirect:/backoffice/usuarios";
+    }
+
+    // Rota para ativar/inativar produto
+    @PostMapping("/backoffice/produtos/toggle/{codigo}")
+    public String toggleProduto(@PathVariable Long codigo) {
+        produtoService.alterarStatusProduto(codigo);
+        return "redirect:/backoffice/produtos";
     }
 
     // Rota para salvar (incluir ou alterar) usuário
@@ -175,6 +188,40 @@ public class BackofficeController {
         }
 
         return "redirect:/backoffice/produtos";
+    }
+
+    @GetMapping("/backoffice/produtos/estoquista-alterar/{codigo}")
+    public String estoquistaAlterarEstoque(@PathVariable Long codigo, Model model) {
+        Produto produto = produtoService.buscarPorCodigo(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+
+        // Carrega o produto e envia para um form simples
+        model.addAttribute("produto", produto);
+        return "estoque-form";
+    }
+
+    @PostMapping("/backoffice/produtos/estoquista-salvar")
+    public String estoquistaSalvarEstoque(
+            @RequestParam Long codigo,
+            @RequestParam int estoque
+    ) {
+        // Busca o produto e altera só o estoque
+        Produto produto = produtoService.buscarPorCodigo(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+
+        produto.setEstoque(estoque);
+        produtoService.save(produto); // ou repository.save
+
+        return "redirect:/backoffice/produtos";
+    }
+
+    @GetMapping("/backoffice/produtos/visualizar/{codigo}")
+    public String visualizarProduto(@PathVariable Long codigo, Model model) {
+        Produto produto = produtoService.buscarPorCodigo(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+
+        model.addAttribute("produto", produto);
+        return "produto-detalhe"; // Retorna a página criada
     }
 
 }

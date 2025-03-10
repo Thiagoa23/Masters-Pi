@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Produto</title>
+    <style>
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: center;
+        }
+        .produto-img {
+            max-width: 400px;
+        }
+        .carousel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .carousel img {
+            width: 100px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .carousel img:hover {
+            border: 2px solid blue;
+        }
+        .avaliacao {
+            font-size: 24px;
+            color: gold;
+        }
+        .desativado {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 th:text="${produto.nome}"></h1>
+        
+        <!-- Imagem principal -->
+        <img th:src="@{/imagens/{filename}(filename=${produto.imagemPrincipal})}" class="produto-img" id="imagemPrincipal" />
+
+        <!-- Carrossel de imagens -->
+        <div class="carousel">
+            <img th:each="img : ${produto.imagens}" th:src="@{/imagens/{filename}(filename=${img})}"
+                 th:onclick="|document.getElementById('imagemPrincipal').src='@{/imagens/{filename}(filename=${img})}'|" />
+        </div>
+
+        <h3 th:text="'Preço: R$ ' + ${produto.valor}"></h3>
+        <p th:text="'Descrição: ' + ${produto.descricao}"></p>
+        <p th:text="'Estoque disponível: ' + ${produto.estoque}"></p>
+
+        <!-- Exibir avaliação com estrelas -->
+        <p class="avaliacao">
+            <span th:each="i : ${#numbers.sequence(1, produto.avaliacao)}">★</span>
+            <span th:each="i : ${#numbers.sequence(produto.avaliacao + 1, 5)}">☆</span>
+        </p>
+
+        <!-- Botão de compra desativado -->
+        <button class="desativado" disabled>Comprar</button>
+
+        <br><br>
+        <a th:href="@{/backoffice/produtos}">⬅ Voltar</a>
+    </div>
+
+</body>
+</html>
