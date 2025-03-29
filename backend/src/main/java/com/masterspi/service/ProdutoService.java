@@ -123,7 +123,6 @@ public class ProdutoService {
             String descricao,
             BigDecimal valor,
             int estoque,
-            boolean ativo,
             List<MultipartFile> novasImagens,
             String nomeImagemPrincipal // Valor do radio; pode ser vazio se o usuário não alterou
     ) {
@@ -136,7 +135,6 @@ public class ProdutoService {
         produto.setDescricao(descricao);
         produto.setValor(valor);
         produto.setEstoque(estoque);
-        produto.setAtivo(ativo);
 
         // Copia a lista atual de imagens (antigas)
         List<String> listaAtual = new ArrayList<>(produto.getImagens());

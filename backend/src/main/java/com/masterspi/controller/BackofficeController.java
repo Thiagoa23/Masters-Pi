@@ -170,11 +170,10 @@ public class BackofficeController {
             @RequestParam String descricao,
             @RequestParam BigDecimal valor,
             @RequestParam int estoque,
-            @RequestParam(required = false) Boolean ativo,
             @RequestParam("imagens") List<MultipartFile> imagens,
             @RequestParam(required = false) String imagemPrincipal) {
 
-        boolean statusAtivo = (ativo != null) ? ativo : false;
+        boolean statusAtivo = true;
 
         // Conversão explícita da lista para array
         MultipartFile[] imagensArray = imagens.toArray(new MultipartFile[0]);
@@ -184,7 +183,7 @@ public class BackofficeController {
             produtoService.salvarProduto(nome, avaliacao, descricao, valor, estoque, statusAtivo, imagensArray, imagemPrincipal);
         } else {
             // Edição de produto existente
-            produtoService.alterarProduto(codigo, nome, avaliacao, descricao, valor, estoque, statusAtivo, Arrays.asList(imagensArray), imagemPrincipal);
+            produtoService.alterarProduto(codigo, nome, avaliacao, descricao, valor, estoque, Arrays.asList(imagensArray), imagemPrincipal);
         }
 
         return "redirect:/backoffice/produtos";
