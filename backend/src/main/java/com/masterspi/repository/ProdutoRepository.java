@@ -12,4 +12,6 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     List<Produto> findByAtivoTrueOrderByCodigoDesc();
 
     Page<Produto> findByAtivoTrue(Pageable pageable);
+    
+    List<Produto> findByAtivoTrue();
 }

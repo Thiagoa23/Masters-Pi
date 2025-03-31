@@ -1,0 +1,111 @@
+body {
+    background-color: var(--fundo-pagina);
+
+}
+
+/* TOPO COM GRADIENTE (header) */
+.topo {
+    background: linear-gradient(135deg,
+            rgba(100, 217, 140, 0.40) 0%,
+            rgba(29, 176, 106, 0.65) 51%,
+            rgba(100, 217, 140, 0.40) 100%);
+    padding-top: clamp(90px, 7vw, 120px);
+    padding-bottom: 2rem;
+
+}
+
+/* BANNER */
+.banner-placeholder {
+    background-color: rgb(239, 234, 234);
+    height: 500px;
+    border-radius: 8px;
+    margin: 2rem auto 2.5rem;
+    width: 85vw;
+    max-width: 1580px;
+}
+
+/* PRODUTOS */
+.produtos {
+    padding-top: 5vh;
+    width: 85vw;
+    max-width: 1580px;
+    margin: 0 auto;
+}
+
+.produtos-grid {
+    padding-top: 5vh;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+/* CARD DE PRODUTO */
+.card {
+    background-color: var(--branco-card);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.card img {
+    background-color: var(--cinza-imagem-card);
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+}
+
+.card h3 {
+    font-size: clamp(0.95rem, 1vw, 1rem);
+    margin: 8px 12px 4px;
+    color: var(--texto-card);
+}
+
+.card p {
+    font-size: clamp(0.85rem, 0.9vw, 0.95rem);
+    margin: 0 12px 8px;
+    color: var(--texto-card);
+}
+
+.card .btn {
+    margin: 0 12px 12px;
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(to right, var(--grad-detalhes-inicio), var(--grad-detalhes-fim));
+    border-radius: 4px;
+    text-align: center;
+}
+
+.card .btn-comprar {
+    display: inline-block;
+    background-color: #0F2137;
+    color: white;
+    text-align: center;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin: 0 12px 12px;
+}
+
+
+.avaliacao-card,
+.avaliacao {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.avaliacao-card img,
+.avaliacao img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}

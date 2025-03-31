@@ -1,0 +1,141 @@
+body {
+    background-color: var(--fundo-pagina);
+    padding-top: 2rem;
+}
+
+.carrinho {
+    width: 85vw;
+    max-width: 1580px;
+    margin: 15vh auto;
+    background-color: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.carrinho h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--texto-card);
+}
+
+.item-carrinho {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.item-carrinho img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: var(--cinza-imagem-card);
+}
+
+.item-carrinho .info {
+    flex: 1;
+}
+
+.item-carrinho h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    color: var(--texto-card);
+}
+
+.item-carrinho p {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+}
+
+.quantidade {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quantidade button {
+    padding: 4px 10px;
+    font-size: 0.9rem;
+    background-color: #0F2137;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.quantidade span {
+    font-size: 1rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* FRETE */
+.frete,
+#wrapper-total,
+#finalizar-compra {
+    display: none;
+}
+
+.frete h2 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.frete label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+#cep {
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    max-width: 250px;
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+    margin-bottom: 0.2rem;
+    transition: border-color 0.3s ease;
+}
+
+#cep:focus {
+    outline: none;
+    border-color: #0F2137;
+}
+
+
+/* TOTAL */
+#total-geral {
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+#calcular-frete {
+    background-color: #0F2137;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* FINALIZAR COMPRA */
+#finalizar-compra {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 12px;
+    background-color: #0F2137;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}

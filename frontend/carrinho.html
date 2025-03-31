@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Carrinho - Green Growth</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/carrinho.css">
+</head>
+
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="carrinho">
+    <h1>Seu Carrinho</h1>
+
+    <div id="lista-carrinho"></div>
+
+    <div class="cep">
+      <label for="cep">Digite seu CEP:</label><br>
+      <input type="text" id="cep" placeholder="00000-000" maxlength="9" />
+      <button id="calcular-frete" class="btn-detalhe">Calcular Frete</button>
+      <p id="erro-cep" style="color: red; display: none;"></p>
+    </div>
+
+    <section class="frete" style="display: none;">
+      <h2>Escolha o frete</h2>
+      <label><input type="radio" name="frete" value="3.88" checked> Padrão - R$3,88 (5 a 7 dias úteis)</label><br>
+      <label><input type="radio" name="frete" value="8.90"> Expresso - R$8,90 (3 a 5 dias úteis)</label><br>
+      <label><input type="radio" name="frete" value="14.40"> Ultra Rápido - R$14,40 (1 a 2 dias úteis)</label>
+    </section>
+
+    <div id="wrapper-total" style="display: none;">
+      <p><strong id="subtotal">Subtotal: R$ 0,00</strong></p>
+      <p><strong>Total: R$ <span id="total-geral">0,00</span></strong></p>
+      <button id="finalizar-compra">Finalizar Compra</button>
+    </div>
+  </main>
+
+  <script type="module" src="./componentes/Navbar.js"></script>
+  <script type="module" src="js/controller/CarrinhoController.js"></script>
+</body>
+
+</html>

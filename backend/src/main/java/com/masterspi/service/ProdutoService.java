@@ -204,4 +204,9 @@ public class ProdutoService {
         produtoRepository.save(produto); // Salva a alteração no banco
     }
 
+    public List<Produto> buscarProdutosAtivos() {
+        return produtoRepository.findByAtivoTrue();
+    }
+
+    
 }

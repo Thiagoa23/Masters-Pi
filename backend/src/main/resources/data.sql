@@ -5,9 +5,9 @@ INSERT INTO users (cpf, email, password, enabled, nome, role) VALUES
 
 -- Inserindo produtos
 INSERT INTO produtos (ativo, avaliacao, descricao, estoque, imagem_principal, nome, valor) VALUES
-(1, 4.5, 'Novo valorant tactibear valorant punho jogo pe...', 76, '4ee2e5ca-8fec-4cc1-8e7c-698afd0fab5cf_pelucia.jpeg', 'Pelucia valorant tactibear valorant', 53.97),
-(1, 5.0, 'VALORANT Bonecos De Pelúcia Wingman', 28, '59783e8b-d3e3-4713-9d53-1e81f54843d4_pelucia4.jpeg', 'Pelucia Wingman Gekko', 75.35),
-(0, 4.0, 'Pelúcia Pinguim Tático Boneca Coelho para Cria...', 13, NULL, 'Jogo de pelucia agentes valorant', 326.60);
+(1, 4.5, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat commodo tellus id dictum. Etiam ut massa vitae tellus imperdiet viverra. Phasellus non nulla pellentesque, imperdiet urna eget, condimentum quam. Praesent ac imperdiet ante, non congue leo. Fusce et quam ut nibh volutpat vulputate ac eu risus. Phasellus lobortis urna ut felis pharetra mollis. In ut ex a nisl posuere semper. Nunc non eros sit amet nunc lobortis consequat sed hendrerit enim. Aliquam tincidunt libero ac sem auctor aliquet. Nullam magna ligula, ultricies non ornare sed, tempus nec tellus. Etiam.', 76, '4ee2e5ca-8fec-4cc1-8e7c-698afd0fab5cf_pelucia.jpeg', 'Pelucia valorant tactibear valorant', 53.97),
+(1, 5.0, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ac vehicula mauris, a hendrerit nisl. Integer varius ligula erat, et viverra nisi auctor eget. Fusce cursus est vitae nulla fermentum pharetra. Nulla sit amet vulputate tortor. Donec sed nunc vitae ligula congue venenatis at nec mi. Proin consectetur urna quis nisi tincidunt, ac placerat ex dictum. Vivamus lacinia sem leo, id posuere sem elementum vel. Integer semper tempus neque et.', 28, '59783e8b-d3e3-4713-9d53-1e81f54843d4_pelucia4.jpeg', 'Pelucia Wingman Gekko', 75.35),
+(0, 4.0, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et eros congue, gravida lectus consequat, vulputate tortor. Fusce non nisl lobortis, sagittis leo et, molestie arcu. Pellentesque vel eleifend arcu. Ut vulputate non ligula et cursus. Etiam gravida, velit ut dapibus molestie, ex enim sodales risus, eu feugiat purus metus.', 13, 'baa8dd99-a16f-49c2-ae48-215c86ddee1c_WhatsApp_Image_2025-03-10_at_18.58.32.jpeg', 'Jogo de pelucia agentes valorant', 326.60);
 
 -- Inserindo imagens dos produtos (ajustado para usar os IDs gerados automaticamente)
 INSERT INTO produto_imagens (produto_id, caminho_imagem) VALUES

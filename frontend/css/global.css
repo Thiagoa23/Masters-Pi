@@ -1,0 +1,88 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #FAFAFA;
+    color: #292929;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* NAVBAR */
+.navbar {
+    position: fixed;
+    top: 2rem;
+    left: 0;
+    right: 0;
+    z-index: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 60px;
+    padding: 0 1.5rem;
+    background-color: white;
+    border-radius: 12px;
+
+    width: 85vw;
+    max-width: 1580px;
+    margin: 0 auto;
+}
+
+.logo img {
+    height: 50px;
+}
+
+.menu-topo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-topo img {
+    height: 24px;
+}
+
+.carrinho-link {
+    position: relative;
+    display: inline-block;
+}
+
+#contador-carrinho {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background: #41E77E;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+
+/* Variáveis de cor reais */
+:root {
+    --verde-grad-inicio: #64D98C;
+    --verde-grad-meio: #1DB06A;
+    --verde-grad-fim: #64D98C;
+
+    --cinza-imagem-card: #F6F7FA;
+    --branco-card: #FFFFFF;
+
+    --grad-detalhes-inicio: #41E77E;
+    --grad-detalhes-fim: #99F6BB;
+
+    --texto-card: #292929;
+
+    --fundo-pagina: #FAFAFA;
+}
