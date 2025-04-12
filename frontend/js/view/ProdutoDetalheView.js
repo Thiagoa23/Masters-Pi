@@ -53,7 +53,7 @@ export const ProdutoDetalheView = {
   
     window.glide = new Glide('.glide', {
       type: 'carousel',
-      autoplay: 4000,
+      autoplay: 2000,
       hoverpause: true,
       perView: 1
     });

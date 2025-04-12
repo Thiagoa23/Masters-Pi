@@ -1,70 +1,207 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Detalhes do Produto</title>
-    <style>
-        .container {
-            width: 80%;
-            margin: auto;
-            text-align: center;
-        }
-        .produto-img {
-            max-width: 400px;
-        }
-        .carousel {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .carousel img {
-            width: 100px;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .carousel img:hover {
-            border: 2px solid blue;
-        }
-        .avaliacao {
-            font-size: 24px;
-            color: gold;
-        }
-        .desativado {
-            background-color: gray;
-            cursor: not-allowed;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Green Growth - Detalhes do Produto</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@glidejs/glide/dist/css/glide.core.min.css" />
+  <style>
+    body {
+      background-color: #FAFAFA;
+      padding-top: 2rem;
+    }
+
+    .produto-detalhe {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 85vw;
+      max-width: 1580px;
+      margin: 15vh auto;
+      gap: 2rem;
+      flex-wrap: wrap;
+      background-color: white;
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .galeria {
+      flex: 0 0 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .miniaturas {
+      display: flex;
+      gap: 12px;
+      margin-top: 1rem;
+    }
+
+    .miniaturas img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .miniaturas img:hover,
+    .miniaturas img.selecionada {
+      border-color: #41E77E;
+    }
+
+    .info {
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #292929;
+    }
+
+    .info h2 {
+      font-size: 1.4rem;
+      color: #292929;
+      margin-bottom: 0.3rem;
+    }
+
+    .info p {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: #292929;
+      white-space: normal;
+    }
+
+    .avaliacao {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 1rem;
+    }
+
+    .avaliacao img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+    }
+
+    .btn-detalhe {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      color: white;
+      background-color: #0F2137;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-weight: bold;
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .glide {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .glide__slides {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .glide__slide img {
+      width: 100%;
+      border-radius: 8px;
+    }
+
+    .glide__bullets {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .glide__bullet {
+      width: 10px;
+      height: 10px;
+      background-color: #d9d9d9;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .glide__bullet--active {
+      background-color: #41E77E;
+    }
+  </style>
 </head>
+
 <body>
-
-    <div class="container">
-        <h1 th:text="${produto.nome}"></h1>
-        
-        <!-- Imagem principal -->
-        <img th:src="@{/imagens/{filename}(filename=${produto.imagemPrincipal})}" class="produto-img" id="imagemPrincipal" />
-
-        <!-- Carrossel de imagens -->
-        <div class="carousel">
-            <img th:each="img : ${produto.imagens}" th:src="@{/imagens/{filename}(filename=${img})}"
-                 th:onclick="|document.getElementById('imagemPrincipal').src='@{/imagens/{filename}(filename=${img})}'|" />
+  <main class="produto-detalhe">
+    <section class="galeria">
+      <div class="glide">
+        <div class="glide__track" data-glide-el="track">
+          <ul class="glide__slides">
+            <li class="glide__slide" th:each="img : ${produto.imagens}">
+              <img th:src="@{/uploads/{file}(file=${img})}" alt="Imagem do Produto">
+            </li>
+          </ul>
         </div>
+        <div class="glide__bullets" data-glide-el="controls[nav]">
+          <button class="glide__bullet" data-glide-dir="=0"></button>
+          <button class="glide__bullet" data-glide-dir="=1"></button>
+          <button class="glide__bullet" data-glide-dir="=2"></button>
+        </div>
+      </div>
 
-        <h3 th:text="'Preço: R$ ' + ${produto.valor}"></h3>
-        <p th:text="'Descrição: ' + ${produto.descricao}"></p>
-        <p th:text="'Estoque disponível: ' + ${produto.estoque}"></p>
+      <div class="miniaturas">
+        <img th:each="img, iterStat : ${produto.imagens}" 
+             th:src="@{/uploads/{file}(file=${img})}" 
+             th:onclick="|window.glide.go('=${iterStat.index}')|"
+             alt="Miniatura">
+      </div>
+    </section>
 
-        <!-- Exibir avaliação com estrelas -->
-        <p class="avaliacao">
-            <span th:each="i : ${#numbers.sequence(1, produto.avaliacao)}">★</span>
-            <span th:each="i : ${#numbers.sequence(produto.avaliacao + 1, 5)}">☆</span>
-        </p>
+    <section class="info">
+      <h1 th:text="${produto.nome}">Nome do Produto</h1>
+      <h2 th:text="'R$ ' + ${produto.valor}">R$ 0,00</h2>
+      <div class="avaliacao">
+        <span th:each="i : ${#numbers.sequence(1, produto.avaliacao)}">
+          <img src="/assets/icones/estrela-cheia.svg" />
+        </span>
+        <span th:if="${produto.avaliacao % 1 >= 0.5}">
+          <img src="/assets/icones/estrela-meia.svg" />
+        </span>
+        <span th:each="i : ${#numbers.sequence(produto.avaliacao + 1, 5)}">
+          <img src="/assets/icones/estrela-vazia.svg" />
+        </span>
+      </div>
+      <h3>Descrição</h3>
+      <p id="descricao-produto" th:text="${produto.descricao}">Descrição aqui</p>
 
-        <!-- Botão de compra desativado -->
-        <button class="desativado" disabled>Comprar</button>
+      <button class="btn-detalhe" disabled>Adicionar ao Carrinho</button>
+      <button class="btn-detalhe" disabled>Comprar</button>
+    </section>
+  </main>
 
-        <br><br>
-        <a th:href="@{/backoffice/produtos}">⬅ Voltar</a>
-    </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/@glidejs/glide"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      window.glide = new Glide('.glide', {
+        type: 'carousel',
+        autoplay: 2000,
+        hoverpause: true,
+        perView: 1
+      }).mount();
+    });
+  </script>
 </body>
+
 </html>
