@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const navbarContainer = document.getElementById("navbar-container");
     if (!navbarContainer) return;
 
+    const cliente = JSON.parse(sessionStorage.getItem("clienteLogado"));
+
     navbarContainer.innerHTML = `
       <div class="navbar">
         <div class="logo">
@@ -11,13 +13,18 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <div class="menu-topo">
-            <a href="login.html">Login/Cadastre-se</a>
+            ${cliente ? `
+                <span>Olá, ${cliente.nome.split(" ")[0]}</span>
+                <a href="#" id="btnLogout">Sair</a>
+            ` : `
+                <a href="login-cliente.html">Login/Cadastre-se</a>
+            `}
             <a href="carrinho.html" class="carrinho-link">
                 <img src="assets/icones/carrinho.svg" alt="Carrinho">
                 <span id="contador-carrinho">0</span>
             </a>
         </div>
-    </div>
+      </div>
     `;
 
     const contador = document.getElementById("contador-carrinho");
@@ -25,4 +32,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const total = carrinho.reduce((soma, item) => soma + item.quantidade, 0);
     contador.textContent = total;
 
+    const btnLogout = document.getElementById("btnLogout");
+    if (btnLogout) {
+        btnLogout.addEventListener("click", async () => {
+            try {
+                const response = await fetch("http://localhost:8080/api/cliente/logout", {
+                    method: "GET",
+                    credentials: "include"
+                });
+                
+                if (response.ok) {
+                    sessionStorage.removeItem("clienteLogado");
+                    window.location.href = "index.html";
+                }
+            } catch (err) {
+                alert("Erro ao sair. Tente novamente.");
+            }
+        });
+    }
 });

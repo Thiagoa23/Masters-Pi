@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Cliente</title>
+</head>
+<body>
+    <h1>Cadastro de Cliente</h1>
+
+    <form id="formCadastro">
+        <p><strong>Informações Pessoais:</strong></p>
+
+        <label>Nome completo:</label><br>
+        <input type="text" name="nome" required><br><br>
+
+        <label>CPF:</label><br>
+        <input type="text" name="cpf" required><br><br>
+
+        <label>Email:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Senha:</label><br>
+        <input type="password" name="senha" required><br><br>
+
+        <label>Data de Nascimento:</label><br>
+        <input type="date" name="dataNascimento" required><br><br>
+
+        <label>Gênero:</label><br>
+        <select name="genero" required>
+            <option value="">Selecione</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Outro">Outro</option>
+        </select><br><br>
+
+        <hr>
+        <p><strong>Endereço de Entrega:</strong></p>
+
+        <label>CEP:</label><br>
+        <input type="text" name="cepE" required><br><br>
+
+        <label>Logradouro:</label><br>
+        <input type="text" name="logradouroE" required><br><br>
+
+        <label>Número:</label><br>
+        <input type="text" name="numeroE" required><br><br>
+
+        <label>Complemento:</label><br>
+        <input type="text" name="complementoE"><br><br>
+
+        <label>Bairro:</label><br>
+        <input type="text" name="bairroE" required><br><br>
+
+        <label>Cidade:</label><br>
+        <input type="text" name="cidadeE" required><br><br>
+
+        <label>UF:</label><br>
+        <input type="text" name="ufE" required><br><br>
+
+        <button type="submit">Cadastrar</button>
+    </form>
+
+    <p id="resposta"></p>
+
+    <script>
+        async function preencherEnderecoViaCEP(cep, prefixo) {
+            if (!cep || cep.length !== 8) return false;
+    
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+    
+                if (data.erro) return false;
+    
+                document.querySelector(`input[name="logradouro${prefixo}"]`).value = data.logradouro;
+                document.querySelector(`input[name="bairro${prefixo}"]`).value = data.bairro;
+                document.querySelector(`input[name="cidade${prefixo}"]`).value = data.localidade;
+                document.querySelector(`input[name="uf${prefixo}"]`).value = data.uf;
+    
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+    
+        document.getElementById("formCadastro").addEventListener("submit", async function (e) {
+            e.preventDefault();
+    
+            const form = e.target;
+            const cep = form.cepE.value.replace(/\D/g, "");
+    
+            const cepValido = await preencherEnderecoViaCEP(cep, "E");
+    
+            if (!cepValido) {
+                alert("CEP inválido. Verifique e tente novamente.");
+                return;
+            }
+    
+            const cliente = {
+                nome: form.nome.value,
+                cpf: form.cpf.value,
+                email: form.email.value,
+                senha: form.senha.value,
+                dataNascimento: form.dataNascimento.value,
+                genero: form.genero.value,
+                enderecosEntrega: [
+                    {
+                        cep: form.cepE.value,
+                        logradouro: form.logradouroE.value,
+                        numero: form.numeroE.value,
+                        complemento: form.complementoE.value,
+                        bairro: form.bairroE.value,
+                        cidade: form.cidadeE.value,
+                        uf: form.ufE.value
+                    }
+                ]
+            };
+    
+            try {
+                const response = await fetch("http://localhost:8080/api/cliente/cadastrar", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(cliente)
+                });
+    
+                const texto = await response.text();
+                document.getElementById("resposta").innerText = texto;
+    
+                if (response.ok) {
+                    setTimeout(() => {
+                        window.location.href = "login-cliente.html";
+                    }, 2000);
+                }
+            } catch (error) {
+                document.getElementById("resposta").innerText = "Erro ao enviar requisição.";
+            }
+        });
+    </script>
+</body>
+</html>
