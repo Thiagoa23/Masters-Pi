@@ -14,14 +14,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="menu-topo">
             ${cliente ? `
-                <span id="perfil-cliente" style="cursor:pointer;">👤 Olá, ${cliente.nome.split(" ")[0]}</span>
-                <a href="#" id="btnLogout" title="Sair">🚪</a>
+                <span id="perfil-cliente" title="Meus Dados" style="cursor:pointer; display: flex; align-items: center; gap: 4px;">
+                    <img src="assets/icones/perfil.svg" alt="Perfil" style="width: 24px; height: 24px;"> 
+                    Olá, ${cliente.nome.split(" ")[0]}
+                </span>
+                <a href="#" id="btnLogout" title="Logout" style="display: inline-flex; align-items: center;">
+                    <img src="assets/icones/logout.svg" alt="Logout" style="width: 24px; height: 24px;">
+                </a>
             ` : `
                 <a href="login-cliente.html">Login/Cadastre-se</a>
             `}
             <a href="carrinho.html" class="carrinho-link">
-                <img src="assets/icones/carrinho.svg" alt="Carrinho">
-                <span id="contador-carrinho">0</span>
+                <img src="assets/icones/carrinho.svg" alt="Carrinho" style="margin-top: 0.5vh;">
+                <span id="contador-carrinho" style="margin-top: 0.5vh;">0</span>
             </a>
         </div>
       </div>

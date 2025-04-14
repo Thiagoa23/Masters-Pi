@@ -85,9 +85,9 @@ public class ClienteController {
 
             clienteService.adicionarEnderecoEntrega(logado.getId(), endereco);
 
-            // Atualiza sessionStorage manualmente (opcional)
-            logado.getEnderecosEntrega().add(endereco);
-            session.setAttribute("clienteLogado", logado);
+            // Atualiza cliente e session com o novo endereço
+            Cliente atualizado = clienteService.buscarPorEmail(logado.getEmail()).orElse(logado);
+            session.setAttribute("clienteLogado", atualizado);
 
             return ResponseEntity.ok("Endereço adicionado com sucesso.");
         } catch (Exception e) {

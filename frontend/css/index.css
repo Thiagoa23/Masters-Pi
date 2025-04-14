@@ -10,14 +10,14 @@ body {
             rgba(29, 176, 106, 0.65) 51%,
             rgba(100, 217, 140, 0.40) 100%);
     padding-top: clamp(90px, 7vw, 120px);
-    padding-bottom: 2rem;
+    padding-bottom: 2.5rem;
 
 }
 
 /* BANNER */
 .banner-placeholder {
     border-radius: 8px;
-    margin: 2rem auto 2.5rem;
+    margin: 2rem auto 0;
     width: min(85vw, 100%);
     max-width: 1580px;
     box-sizing: border-box;
@@ -35,7 +35,7 @@ body {
 
 /* PRODUTOS */
 .produtos {
-    padding-top: 5vh;
+    padding-top: 1vh;
     width: 85vw;
     max-width: 1580px;
     margin: 0 auto;
