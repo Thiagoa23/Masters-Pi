@@ -14,12 +14,12 @@ public class EnderecoEntrega {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     @JsonBackReference
     private Cliente cliente;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 9)
     private String cep;
 
     @Column(nullable = false)
@@ -28,6 +28,7 @@ public class EnderecoEntrega {
     @Column(nullable = false)
     private String numero;
 
+    @Column
     private String complemento;
 
     @Column(nullable = false)

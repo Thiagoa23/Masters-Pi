@@ -1,19 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.masterspi.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
-/**
- *
- * @author Thiago
- */
 @Getter
 @Setter
 @Entity
@@ -41,7 +34,7 @@ public class Cliente {
     @Column(nullable = false)
     private String genero;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
-    private List<EnderecoEntrega> enderecosEntrega;
+    private List<EnderecoEntrega> enderecosEntrega = new ArrayList<>();
 }

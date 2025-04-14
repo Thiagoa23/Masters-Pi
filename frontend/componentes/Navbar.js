@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <div class="menu-topo">
             ${cliente ? `
-                <span>Olá, ${cliente.nome.split(" ")[0]}</span>
-                <a href="#" id="btnLogout">Sair</a>
+                <span id="perfil-cliente" style="cursor:pointer;">👤 Olá, ${cliente.nome.split(" ")[0]}</span>
+                <a href="#" id="btnLogout" title="Sair">🚪</a>
             ` : `
                 <a href="login-cliente.html">Login/Cadastre-se</a>
             `}
@@ -27,11 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Atualiza contador do carrinho
     const contador = document.getElementById("contador-carrinho");
     const carrinho = JSON.parse(sessionStorage.getItem("carrinho")) || [];
     const total = carrinho.reduce((soma, item) => soma + item.quantidade, 0);
     contador.textContent = total;
 
+    // Logout
     const btnLogout = document.getElementById("btnLogout");
     if (btnLogout) {
         btnLogout.addEventListener("click", async () => {
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     method: "GET",
                     credentials: "include"
                 });
-                
+
                 if (response.ok) {
                     sessionStorage.removeItem("clienteLogado");
                     window.location.href = "index.html";
@@ -48,6 +50,14 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (err) {
                 alert("Erro ao sair. Tente novamente.");
             }
+        });
+    }
+
+    // Redireciona para a tela de dados
+    const perfil = document.getElementById("perfil-cliente");
+    if (perfil) {
+        perfil.addEventListener("click", () => {
+            window.location.href = "meus-dados.html";
         });
     }
 });

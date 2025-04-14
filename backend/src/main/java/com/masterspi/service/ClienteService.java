@@ -71,13 +71,78 @@ public class ClienteService {
     }
 
     private boolean nomeValido(String nome) {
-        if (nome == null) return false;
+        if (nome == null) {
+            return false;
+        }
         String[] partes = nome.trim().split("\\s+");
-        if (partes.length < 2) return false;
+        if (partes.length < 2) {
+            return false;
+        }
 
         for (String parte : partes) {
-            if (parte.length() < 3) return false;
+            if (parte.length() < 3) {
+                return false;
+            }
         }
         return true;
     }
+
+    public void atualizarCliente(Cliente clienteAtualizado) throws Exception {
+        Cliente clienteExistente = clienteRepository.findById(clienteAtualizado.getId())
+                .orElseThrow(() -> new Exception("Cliente não encontrado."));
+
+        if (!nomeValido(clienteAtualizado.getNome())) {
+            throw new Exception("Nome inválido. Deve conter ao menos duas palavras com 3 letras ou mais.");
+        }
+
+        clienteExistente.setNome(clienteAtualizado.getNome());
+        clienteExistente.setGenero(clienteAtualizado.getGenero());
+
+        if (clienteAtualizado.getSenha() != null && !clienteAtualizado.getSenha().isBlank()) {
+            String senhaCriptografada = passwordEncoder.encode(clienteAtualizado.getSenha());
+            clienteExistente.setSenha(senhaCriptografada);
+        }
+
+        clienteRepository.save(clienteExistente);
+    }
+
+    public void adicionarEnderecoEntrega(Long clienteId, EnderecoEntrega novoEndereco) throws Exception {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new Exception("Cliente não encontrado."));
+
+        // 🔧 Força o Hibernate a carregar a coleção lazy antes de manipular
+        cliente.getEnderecosEntrega().size();
+
+        novoEndereco.setCliente(cliente);
+
+        boolean definirComoPadrao = cliente.getEnderecosEntrega().isEmpty();
+        novoEndereco.setPadrao(definirComoPadrao);
+
+        cliente.getEnderecosEntrega().add(novoEndereco);
+        clienteRepository.save(cliente);
+    }
+
+    public void definirEnderecoPadrao(Long clienteId, Long idEnderecoPadrao) throws Exception {
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new Exception("Cliente não encontrado."));
+
+        cliente.getEnderecosEntrega().size(); // força carregamento
+
+        boolean encontrou = false;
+        for (EnderecoEntrega endereco : cliente.getEnderecosEntrega()) {
+            if (endereco.getId().equals(idEnderecoPadrao)) {
+                endereco.setPadrao(true);
+                encontrou = true;
+            } else {
+                endereco.setPadrao(false);
+            }
+        }
+
+        if (!encontrou) {
+            throw new Exception("Endereço informado não pertence ao cliente.");
+        }
+
+        clienteRepository.save(cliente);
+    }
+
 }
