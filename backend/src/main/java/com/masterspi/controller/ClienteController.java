@@ -67,6 +67,7 @@ public class ClienteController {
             clienteService.atualizarCliente(cliente);
             logado.setNome(cliente.getNome());
             logado.setGenero(cliente.getGenero());
+            logado.setDataNascimento(cliente.getDataNascimento());
             session.setAttribute("clienteLogado", logado);
 
             return ResponseEntity.ok("Dados atualizados com sucesso.");

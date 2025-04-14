@@ -97,6 +97,7 @@ public class ClienteService {
 
         clienteExistente.setNome(clienteAtualizado.getNome());
         clienteExistente.setGenero(clienteAtualizado.getGenero());
+        clienteExistente.setDataNascimento(clienteAtualizado.getDataNascimento());
 
         if (clienteAtualizado.getSenha() != null && !clienteAtualizado.getSenha().isBlank()) {
             String senhaCriptografada = passwordEncoder.encode(clienteAtualizado.getSenha());

@@ -25,6 +25,10 @@
                         <input type="text" name="nome" required />
                     </div>
                     <div class="campo">
+                        <label>CPF</label>
+                        <input type="text" name="cpf" disabled />
+                    </div>
+                    <div class="campo">
                         <label>Gênero</label>
                         <select name="genero" required>
                             <option value="">Selecione</option>
@@ -92,14 +96,18 @@
             form.email.value = cliente.email;
             form.dataNascimento.value = formatarDataParaInput(cliente.dataNascimento);
             form.genero.value = cliente.genero;
+            form.cpf.value = cliente.cpf;
+
 
             function formatarDataParaInput(data) {
                 const d = new Date(data);
-                const ano = d.getFullYear();
-                const mes = String(d.getMonth() + 1).padStart(2, '0');
-                const dia = String(d.getDate()).padStart(2, '0');
+                const localDate = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+                const ano = localDate.getFullYear();
+                const mes = String(localDate.getMonth() + 1).padStart(2, '0');
+                const dia = String(localDate.getDate()).padStart(2, '0');
                 return `${ano}-${mes}-${dia}`;
             }
+
 
             const lista = document.getElementById("lista-enderecos");
             const enderecoPadrao = document.getElementById("endereco-padrao");
@@ -141,12 +149,47 @@
             form.addEventListener("submit", async function (e) {
                 e.preventDefault();
 
+                const hoje = new Date();
+                const nascimento = new Date(form.dataNascimento.value);
+
+                if (nascimento > hoje) {
+                    alert("A data de nascimento não pode ser no futuro.");
+                    return;
+                }
+
+                const senhaAtual = form.senhaAtual.value.trim();
                 const novaSenha = form.novaSenha.value.trim();
                 const confirmar = form.confirmarSenha.value.trim();
 
-                if ((novaSenha || confirmar) && novaSenha !== confirmar) {
-                    alert("As senhas não coincidem.");
-                    return;
+                // Caso o usuário queira alterar a senha
+                if (novaSenha || confirmar || senhaAtual) {
+                    if (!senhaAtual || !novaSenha || !confirmar) {
+                        alert("Para alterar a senha, todos os campos de senha devem ser preenchidos.");
+                        return;
+                    }
+
+                    if (novaSenha !== confirmar) {
+                        alert("As senhas não coincidem.");
+                        return;
+                    }
+
+                    // Verifica se a senha atual está correta
+                    try {
+                        const validarSenha = await fetch("http://localhost:8080/api/cliente/login", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            credentials: "include",
+                            body: JSON.stringify({ email: cliente.email, senha: senhaAtual })
+                        });
+
+                        if (!validarSenha.ok) {
+                            alert("Senha atual incorreta.");
+                            return;
+                        }
+                    } catch {
+                        alert("Erro ao validar a senha atual.");
+                        return;
+                    }
                 }
 
                 const dadosAtualizados = {
@@ -339,6 +382,9 @@
                 }
             });
 
+            const hoje = new Date().toISOString().split("T")[0];
+            form.dataNascimento.max = hoje;
+
         });
     </script>
 
@@ -350,7 +396,8 @@
             <form id="formEndereco">
                 <div class="campo"><label>CEP:</label><input type="text" name="cep" required maxlength="9" /></div>
                 <div class="campo"><label>Logradouro:</label><input type="text" name="logradouro" required /></div>
-                <div class="campo"><label>Número:</label><input type="number" name="numero" required min="1" step="1" /></div>
+                <div class="campo"><label>Número:</label><input type="number" name="numero" required min="1" step="1" />
+                </div>
                 <div class="campo"><label>Complemento:</label><input type="text" name="complemento" /></div>
                 <div class="campo"><label>Bairro:</label><input type="text" name="bairro" required /></div>
                 <div class="campo"><label>Cidade:</label><input type="text" name="cidade" required /></div>
