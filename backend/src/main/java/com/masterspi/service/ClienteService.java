@@ -2,8 +2,10 @@ package com.masterspi.service;
 
 import com.masterspi.model.Cliente;
 import com.masterspi.model.EnderecoEntrega;
+import com.masterspi.model.EnderecoFaturamento;
 import com.masterspi.repository.ClienteRepository;
 import com.masterspi.util.CPFValidator;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +27,7 @@ public class ClienteService {
         if (!CPFValidator.isValidCPF(cliente.getCpf())) {
             throw new Exception("CPF inválido.");
         }
+
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
             throw new Exception("CPF já cadastrado.");
         }
@@ -33,25 +36,46 @@ public class ClienteService {
             throw new Exception("E-mail já cadastrado.");
         }
 
+        if (cliente.getFaturamento() == null) {
+            throw new Exception("Endereço de faturamento é obrigatório.");
+        }
+
         if (cliente.getEnderecosEntrega() == null || cliente.getEnderecosEntrega().isEmpty()) {
             throw new Exception("Pelo menos um endereço de entrega deve ser informado.");
         }
 
-        boolean marcouPadrao = false;
-        for (EnderecoEntrega endereco : cliente.getEnderecosEntrega()) {
-            endereco.setCliente(cliente);
-            if (!marcouPadrao) {
-                endereco.setPadrao(true);
-                marcouPadrao = true;
-            } else {
-                endereco.setPadrao(false);
-            }
-        }
-
+        // 🔒 Criptografar senha antes de salvar
         String senhaCriptografada = passwordEncoder.encode(cliente.getSenha());
         cliente.setSenha(senhaCriptografada);
 
-        clienteRepository.save(cliente);
+        // 🧹 Salva cópias dos endereços antes de limpar
+        EnderecoFaturamento faturamentoTemp = cliente.getFaturamento();
+        List<EnderecoEntrega> entregasTemp = cliente.getEnderecosEntrega();
+
+        // ⚡ Primeiro salva o cliente sem endereço
+        cliente.setFaturamento(null);
+        cliente.setEnderecosEntrega(null);
+        Cliente clienteSalvo = clienteRepository.save(cliente);
+
+        // 🔗 Agora associa os endereços ao cliente salvo
+        faturamentoTemp.setCliente(clienteSalvo);
+
+        boolean marcouPadrao = false;
+        for (EnderecoEntrega entrega : entregasTemp) {
+            entrega.setCliente(clienteSalvo);
+            if (!marcouPadrao) {
+                entrega.setPadrao(true);
+                marcouPadrao = true;
+            } else {
+                entrega.setPadrao(false);
+            }
+        }
+
+        // 🔥 Atualiza cliente já salvo com endereços vinculados
+        clienteSalvo.setFaturamento(faturamentoTemp);
+        clienteSalvo.setEnderecosEntrega(entregasTemp);
+
+        clienteRepository.save(clienteSalvo);
     }
 
     public Cliente loginCliente(String email, String senha) throws Exception {

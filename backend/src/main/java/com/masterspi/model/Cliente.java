@@ -34,6 +34,11 @@ public class Cliente {
     @Column(nullable = false)
     private String genero;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "faturamento_id")
+    @JsonManagedReference
+    private EnderecoFaturamento faturamento;
+
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<EnderecoEntrega> enderecosEntrega = new ArrayList<>();

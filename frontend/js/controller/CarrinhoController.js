@@ -212,9 +212,5 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = cep.slice(0, 9);
   });
 
-  document.getElementById("finalizar-compra").addEventListener("click", () => {
-    alert("Você precisa estar logado para finalizar a compra.");
-  });
-
   renderizarCarrinho();
 });

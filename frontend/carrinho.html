@@ -40,6 +40,24 @@
 
   <script type="module" src="./componentes/Navbar.js"></script>
   <script type="module" src="js/controller/CarrinhoController.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const botaoFinalizar = document.getElementById("finalizar-compra");
+  
+      if (botaoFinalizar) {
+        botaoFinalizar.addEventListener("click", function () {
+          const clienteLogado = sessionStorage.getItem("clienteLogado");
+  
+          if (clienteLogado) {
+            window.location.href = "checkout/endereco.html";
+          } else {
+            window.location.href = "login-cliente.html?redirect=carrinho";
+          }
+        });
+      }
+    });
+  </script>  
 </body>
 
 </html>

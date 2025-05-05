@@ -4,28 +4,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const cliente = JSON.parse(sessionStorage.getItem("clienteLogado"));
 
+    // Corrige caminho relativo dependendo da pasta atual
+    const basePath = window.location.pathname.includes("/checkout/")
+        ? "../"
+        : "";
+
     navbarContainer.innerHTML = `
       <div class="navbar">
         <div class="logo">
-            <a href="index.html">
-                <img src="assets/imagens/logo.png" alt="Logo Green Growth">
+            <a href="${basePath}index.html">
+                <img src="${basePath}assets/imagens/logo.png" alt="Logo Green Growth">
             </a>
         </div>
 
         <div class="menu-topo">
             ${cliente ? `
                 <span id="perfil-cliente" title="Meus Dados" style="cursor:pointer; display: flex; align-items: center; gap: 4px;">
-                    <img src="assets/icones/perfil.svg" alt="Perfil" style="width: 24px; height: 24px;"> 
+                    <img src="${basePath}assets/icones/perfil.svg" alt="Perfil" style="width: 24px; height: 24px;"> 
                     Olá, ${cliente.nome.split(" ")[0]}
                 </span>
-                <a href="#" id="btnLogout" title="Logout" style="display: inline-flex; align-items: center;">
-                    <img src="assets/icones/logout.svg" alt="Logout" style="width: 24px; height: 24px;">
+                <a href="${basePath}pedidos.html" title="Meus Pedidos" style="display: inline-flex; align-items: center; gap: 4px;">
+                    <img src="${basePath}assets/icones/box.svg" alt="Pedidos" style="width: 24px; height: 24px;">
+                    <span>Meus Pedidos</span>
                 </a>
+                <a href="#" id="btnLogout" title="Logout" style="display: inline-flex; align-items: center;">
+                    <img src="${basePath}assets/icones/logout.svg" alt="Logout" style="width: 24px; height: 24px;">
+                </a>
+
             ` : `
-                <a href="login-cliente.html">Login/Cadastre-se</a>
+                <a href="${basePath}login-cliente.html">Login/Cadastre-se</a>
             `}
-            <a href="carrinho.html" class="carrinho-link">
-                <img src="assets/icones/carrinho.svg" alt="Carrinho" style="margin-top: 0.5vh;">
+            <a href="${basePath}carrinho.html" class="carrinho-link">
+                <img src="${basePath}assets/icones/carrinho.svg" alt="Carrinho" style="margin-top: 0.5vh;">
                 <span id="contador-carrinho" style="margin-top: 0.5vh;">0</span>
             </a>
         </div>
@@ -50,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (response.ok) {
                     sessionStorage.removeItem("clienteLogado");
-                    window.location.href = "index.html";
+                    window.location.href = `${basePath}index.html`;
                 }
             } catch (err) {
                 alert("Erro ao sair. Tente novamente.");
@@ -62,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const perfil = document.getElementById("perfil-cliente");
     if (perfil) {
         perfil.addEventListener("click", () => {
-            window.location.href = "meus-dados.html";
+            window.location.href = `${basePath}meus-dados.html`;
         });
     }
 });

@@ -118,6 +118,8 @@
 
                 if (cliente.enderecosEntrega && cliente.enderecosEntrega.length > 0) {
                     cliente.enderecosEntrega.forEach((endereco, index) => {
+                        if (!endereco.id) return; // ignora endereços inválidos
+
                         const complemento = endereco.complemento ? `, ${endereco.complemento}` : "";
 
                         const html = `
@@ -129,17 +131,31 @@
                 </label>
             `;
 
+                        const div = document.createElement("div");
+                        div.classList.add("endereco");
+                        div.innerHTML = html;
+
                         if (endereco.padrao) {
-                            enderecoPadrao.innerHTML = html;
+                            // Se for o padrão, exibe APENAS no topo verde
+                            enderecoPadrao.appendChild(div);
                         } else {
-                            const div = document.createElement("div");
-                            div.classList.add("endereco");
-                            div.innerHTML = html;
+                            // Se não for o padrão, exibe na lista
                             lista.appendChild(div);
                         }
                     });
                 } else {
                     enderecoPadrao.innerHTML = "<p>Nenhum endereço cadastrado ainda.</p>";
+                }
+            }
+
+            function atualizarEnderecoPadrao() {
+                const radioSelecionado = document.querySelector('input[name="enderecoPadrao"]:checked');
+                if (radioSelecionado) {
+                    const divSelecionado = radioSelecionado.closest(".endereco");
+                    if (divSelecionado) {
+                        enderecoPadrao.innerHTML = "";
+                        enderecoPadrao.appendChild(divSelecionado.cloneNode(true));
+                    }
                 }
             }
 
