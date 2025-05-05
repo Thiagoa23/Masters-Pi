@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resumo do Pedido | Green Growth</title>
+  <link rel="stylesheet" href="../css/global.css"/>
+  <style>
+    main {
+      max-width: 1580px;
+      margin: 15vh auto;
+      width: min(85vw, 100%);
+      padding: 3vh clamp(90px, 7vw, 120px);
+      background: #fff;
+      border-radius: 16px;
+    }
+  
+    h1 {
+      margin-bottom: 24px;
+    }
+  
+    .resumo-secao {
+      margin-bottom: 32px;
+    }
+    .resumo-secao h2 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+  
+    /* CONTAINER DE ITENS */
+    .produtos-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+  
+    /* CADA ITEM */
+    .produto-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+  
+    /* IMAGEM DO PRODUTO */
+    .produto-item img, 
+    .item-card img, 
+    .item-carrinho img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+  
+    /* DADOS DO ITEM */
+    .item-dados {
+      flex: 1;
+    }
+  
+    /* VALOR À DIREITA */
+    .item-total {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  
+    .totais {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+      font-weight: 500;
+    }
+  
+    .botoes-resumo {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .botoes-resumo button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .botoes-resumo .voltar {
+      background: transparent;
+      color: #1DB06A;
+      border: 2px solid #1DB06A;
+    }
+    .botoes-resumo .voltar:hover {
+      background: #e8f5e9;
+    }
+    .botoes-resumo .concluir {
+      background: #1DB06A;
+      color: #fff;
+    }
+    .botoes-resumo .concluir:hover {
+      background: #17a65c;
+    }
+  </style>
+  
+  
+  
+</head>
+<body>
+  <div id="navbar-container"></div>
+  <main>
+    <h1>Resumo do Pedido</h1>
+
+    <section class="resumo-secao">
+      <h2>Endereço de Entrega</h2>
+      <p id="endereco-info">Carregando...</p>
+    </section>
+
+    <section class="resumo-secao">
+      <h2>Forma de Pagamento</h2>
+      <p id="pagamento-info">Carregando...</p>
+      <p id="parcelas-info" style="margin-top:4px; display:none; font-weight:500;"></p>
+    </section>
+
+    <section class="resumo-secao">
+      <h2>Escolha o frete</h2>
+      <label><input type="radio" name="frete" value="3.88"/> Padrão – R$3,88 (5 a 7 dias úteis)</label><br>
+      <label><input type="radio" name="frete" value="8.90"/> Expresso – R$8,90 (3 a 5 dias úteis)</label><br>
+      <label><input type="radio" name="frete" value="14.40"/> Ultra Rápido – R$14,40 (1 a 2 dias úteis)</label>
+    </section>
+
+    <section class="resumo-secao produtos-lista" id="lista-produtos">
+      <!-- itens serão injetados pelo JS -->
+    </section>
+
+    <div class="totais">
+      <p>Subtotal: R$ <span id="subtotal">0.00</span></p>
+      <p>Frete: R$ <span id="frete-valor">0.00</span></p>
+      <p>Total Geral: R$ <span id="total-final">0.00</span></p>
+    </div>
+
+    <div class="botoes-resumo">
+      <button class="voltar" id="btn-voltar">Voltar</button>
+      <button class="concluir" id="btn-concluir">Concluir Compra</button>
+    </div>
+  </main>
+
+  <script type="module" src="../componentes/Navbar.js"></script>
+  <script src="../js/controller/ResumoController.js"></script>
+</body>
+</html>

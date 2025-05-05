@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout - Endereço de Entrega</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/meus-dados.css" /> <!-- estilos do modal -->
+    <style>
+        main {
+            max-width: 1580px;
+            margin: 15vh auto;
+            width: min(85vw, 100%);
+            padding: 3vh clamp(90px, 7vw, 120px);
+            background: #fff;
+            border-radius: 16px;
+        }
+
+        .endereco-card {
+            background: #f7f8fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .endereco-card.selecionado {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        #btn-continuar {
+            margin-top: 16px;
+        }
+
+        .btn-detalhe,
+        .botao-verde {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-detalhe {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .botao-verde {
+            background: #28a745;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="checkout-container">
+        <h1>Escolha seu Endereço de Entrega</h1>
+
+        <section id="enderecos-lista">
+            <p>Carregando endereços...</p>
+        </section>
+
+        <button id="btn-adicionar-endereco" class="btn-detalhe">+ Adicionar Novo Endereço</button>
+        <br /><br />
+        <button id="btn-continuar" class="botao-verde" disabled>Continuar para Pagamento</button>
+    </main>
+
+    <!-- Modal copiado de Meus Dados -->
+    <div id="modalEndereco" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h3>Novo Endereço</h3>
+            <form id="formEndereco">
+                <div class="campo"><label>CEP:</label><input type="text" name="cep" required maxlength="9" /></div>
+                <div class="campo"><label>Logradouro:</label><input type="text" name="logradouro" required /></div>
+                <div class="campo"><label>Número:</label><input type="text" name="numero" required /></div>
+                <div class="campo"><label>Complemento:</label><input type="text" name="complemento" /></div>
+                <div class="campo"><label>Bairro:</label><input type="text" name="bairro" required /></div>
+                <div class="campo"><label>Cidade:</label><input type="text" name="cidade" required /></div>
+                <div class="campo"><label>UF:</label><input type="text" name="uf" required maxlength="2" /></div>
+                <div class="botoes-modal">
+                    <button type="submit">Salvar</button>
+                    <button type="button" class="btn-cancelar">Cancelar</button>
+                </div>
+                <p id="mensagemEndereco" class="mensagem-erro"></p>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../componentes/Navbar.js"></script>
+    <script src="../js/controller/EnderecoCheckoutController.js"></script>
+</body>
+
+</html>

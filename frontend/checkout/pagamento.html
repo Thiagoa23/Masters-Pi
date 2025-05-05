@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - Pagamento</title>
+  <link rel="stylesheet" href="../css/global.css" />
+</head>
+
+<style>
+  main {
+    max-width: 1580px;
+    margin: 15vh auto;
+    width: min(85vw, 100%);
+    padding: 3vh clamp(90px, 7vw, 120px);
+    background: #fff;
+    border-radius: 16px;
+  }
+
+  #form-pagamento label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  #form-pagamento input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    accent-color: #1DB06A;
+    cursor: pointer;
+  }
+
+  #form-cartao {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+  }
+  #form-cartao label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  #form-cartao input,
+  #form-cartao select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1rem;
+  }
+
+  /* Campos que podem ser bem estreitos */
+  #form-cartao input#validade,
+  #form-cartao input#cvv,
+  #form-cartao select#parcelas {
+    min-width: 200px;
+    width: 10%;
+  }
+
+  /* Campos full-width */
+  #form-cartao input#numero-cartao,
+  #form-cartao input#nome-titular {
+    width: 70%;
+    max-width: none;
+  }
+
+  /* Ajuste apenas para o campo ano da validade */
+  #form-cartao input#validade-ano {
+    width: 60px;
+  }
+
+  #btn-finalizar {
+    display: inline-block;
+    background-color: #1DB06A;
+    color: #fff;
+    font-size: 1rem;
+    padding: 12px 24px;
+    margin-top: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  #btn-finalizar:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  #btn-finalizar:not(:disabled):hover {
+    background-color: #17a65c;
+  }
+</style>
+
+
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="checkout-container">
+    <h1>Forma de Pagamento</h1>
+
+    <form id="form-pagamento">
+      <label><input type="radio" name="formaPagamento" value="boleto"/>Boleto Bancário</label>
+      <label><input type="radio" name="formaPagamento" value="cartao"/>Cartão de Crédito</label>
+
+      <div id="form-cartao" style="display:none;">
+        <label>
+          Número do Cartão:
+          <input type="text" id="numero-cartao" maxlength="19"/>
+        </label>
+        <label>
+          Nome do Titular:
+          <input type="text" id="nome-titular"/>
+        </label>
+        <label>
+          Validade (MM/AA):
+          <div class="validade-container">
+            <select id="validade-mes" required>
+              <option value="">MM</option>
+              <option value="01">01</option><option value="02">02</option><option value="03">03</option>
+              <option value="04">04</option><option value="05">05</option><option value="06">06</option>
+              <option value="07">07</option><option value="08">08</option><option value="09">09</option>
+              <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+            </select>
+            <span>/</span>
+            <input type="text" id="validade-ano" maxlength="2" placeholder="AA" required/>
+          </div>
+        </label>
+        <label>
+          CVV:
+          <input type="text" id="cvv" maxlength="4"/>
+        </label>
+        <label>
+          Parcelas:
+          <select id="parcelas">
+            <option value="">Escolha</option>
+            <option value="1">1x sem juros</option>
+            <option value="2">2x sem juros</option>
+            <option value="3">3x sem juros</option>
+          </select>
+        </label>
+      </div>
+
+      <button type="submit" id="btn-finalizar" disabled>Finalizar Pedido</button>
+    </form>
+  </main>
+
+  <script type="module" src="../componentes/Navbar.js"></script>
+  <script src="../js/controller/PagamentoController.js"></script>
+</body>
+
+</html>

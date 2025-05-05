@@ -1,0 +1,85 @@
+main{
+    max-width: 1580px;
+    margin: 15vh auto;
+    width: min(85vw, 100%);
+    padding: 3vh clamp(90px, 7vw, 120px);
+    background: #fff;
+    border-radius: 16px;
+}
+
+.lista-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 0;
+  }
+  
+  .pedido-card {
+    position: relative;
+    background: #f7f8fa;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  
+  .pedido-card .btn-detalhes {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #31ba5f;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .pedido-card .btn-detalhes:hover {
+    color: #56f18a;               /* cor mais escura ao passar o mouse */
+  }
+  
+  
+  .pedido-card .btn-voltar {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: transparent;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+  }
+  
+  .pedido-card ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 12px;
+  }
+  
+  .pedido-card li {
+    padding: 4px 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .pedido-items .item-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #e2e5e7;
+  }
+  
+  .pedido-items .item-card:last-child {
+    border-bottom: none;
+  }
+  
+  .pedido-items .item-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .pedido-items .item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
