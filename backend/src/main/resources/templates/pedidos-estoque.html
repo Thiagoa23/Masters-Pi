@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Pedidos (Estoque)</title>
+        <link rel="stylesheet" th:href="@{/css/global.css}">
+        <style>
+            /* seu estilo inline, se quiser */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+            }
+            thead th {
+                background: #f4f4f4;
+                padding: 8px;
+                border-bottom: 2px solid #ddd;
+                text-align: left;
+            }
+            tbody td {
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }
+            tbody tr:hover {
+                background: #fafafa;
+            }
+            .btn-editar {
+                color: #007bff;
+                text-decoration: none;
+                font-size: 0.9em;
+            }
+            .btn-editar:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Lista de Pedidos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Nº Pedido</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ped : ${pedidos}">
+                    <!-- volta à expressão que você já tinha e funciona: -->
+                    <td th:text="${ped.dataCriacao.format(T(java.time.format.DateTimeFormatter).ofPattern('dd/MM/yyyy HH:mm'))}"></td>
+                    <td th:text="${ped.numeroPedido}"></td>
+                    <!-- aqui limitamos a 2 casas decimais -->
+                    <td th:text="${T(java.lang.String).format('R$ %.2f', ped.valorTotal)}"></td>
+                    <td th:text="${ped.status}"></td>
+                    <td>
+                        <a th:href="@{/estoque/pedido/{id}(id=${ped.id})}" class="btn-editar">
+                            Editar pedido
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

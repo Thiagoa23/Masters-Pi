@@ -3,6 +3,10 @@ INSERT INTO users (cpf, email, password, enabled, nome, role) VALUES
 ('306.877.030-00', 'admin@gmail.com', '$2a$10$FnpMotGRLk1Pte1UPwgzFuDQFWiqAYhDQYk4BXe1LDYFVb2s5YtvO', 1, 'Thiago', 'ADMIN'),
 ('844.886.980-00', 'estoq@gmail.com', '$2a$10$FnpMotGRLk1Pte1UPwgzFuDQFWiqAYhDQYk4BXe1LDYFVb2s5YtvO', 1, 'Lucas', 'ESTOQUISTA');
 
+-- Inserindo novo usuário cliente@gmail.com com senha “123” (bcrypt hash gerado)
+INSERT INTO users (cpf, email, password, enabled, nome, role) VALUES
+('123.456.789-09', 'cliente@gmail.com', '$2b$10$5ZfXXMo.moVH0lxRTBOm8.z2uHPC79H2csWURWLlAjWVDcSY7h7fu', 1, 'Cliente', 'CLIENTE');
+
 -- Inserindo produtos
 INSERT INTO produtos (ativo, avaliacao, descricao, estoque, imagem_principal, nome, valor) VALUES
 (1, 4.5, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat commodo tellus id dictum. Etiam ut massa vitae tellus imperdiet viverra. Phasellus non nulla pellentesque, imperdiet urna eget, condimentum quam. Praesent ac imperdiet ante, non congue leo. Fusce et quam ut nibh volutpat vulputate ac eu risus. Phasellus lobortis urna ut felis pharetra mollis. In ut ex a nisl posuere semper. Nunc non eros sit amet nunc lobortis consequat sed hendrerit enim. Aliquam tincidunt libero ac sem auctor aliquet. Nullam magna ligula, ultricies non ornare sed, tempus nec tellus. Etiam.', 76, '4ee2e5ca-8fec-4cc1-8e7c-698afd0fab5cf_pelucia.jpeg', 'Pelucia valorant tactibear valorant', 53.97),

@@ -13,6 +13,7 @@ import com.masterspi.repository.PedidoRepository;
 import com.masterspi.repository.ProdutoRepository;
 import dto.ItemPedidoDTO;
 import dto.PedidoDTO;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class PedidoService {
 
     @Autowired
     private ClienteRepository clienteRepository;
-    
+
     @Autowired
     private ProdutoRepository produtoRepository;
 
@@ -48,6 +49,7 @@ public class PedidoService {
         pedido.setValorTotal(dto.getValorTotal());
         pedido.setStatus("aguardando pagamento");
         pedido.setDataCriacao(LocalDateTime.now());
+        pedido.setValorFrete(dto.getValorFrete());
 
         Integer ultimoNumero = pedidoRepository.buscarUltimoNumeroPedido();
         pedido.setNumeroPedido((ultimoNumero != null ? ultimoNumero : 0) + 1);
@@ -96,6 +98,9 @@ public class PedidoService {
         dto.setValorTotal(pedido.getValorTotal());
         dto.setStatus(pedido.getStatus());
         dto.setDataCriacao(pedido.getDataCriacao());
+        dto.setEnderecoEntrega(pedido.getEnderecoEntrega());
+        dto.setFormaPagamento(pedido.getFormaPagamento());
+        dto.setValorFrete(pedido.getValorFrete());
 
         List<ItemPedidoDTO> itens = pedido.getItens().stream().map(item -> {
             ItemPedidoDTO i = new ItemPedidoDTO();
@@ -114,8 +119,8 @@ public class PedidoService {
             if (url == null || url.isEmpty()) {
                 List<String> imgs = produto.getImagens();
                 url = (imgs != null && !imgs.isEmpty())
-                      ? imgs.get(0)
-                      : "assets/imagens/placeholder.png";
+                        ? imgs.get(0)
+                        : "assets/imagens/placeholder.png";
             }
             i.setImagemUrl(url);
 
@@ -125,4 +130,29 @@ public class PedidoService {
         dto.setItens(itens);
         return dto;
     }
+
+    public List<PedidoDTO> buscarTodosPedidos() {
+        return pedidoRepository
+                .findAllByOrderByDataCriacaoDesc()
+                .stream()
+                .map(p -> {
+                    PedidoDTO dto = new PedidoDTO();
+                    dto.setId(p.getId());
+                    dto.setNumeroPedido(p.getNumeroPedido());
+                    dto.setDataCriacao(p.getDataCriacao());
+                    dto.setValorTotal(p.getValorTotal());
+                    dto.setStatus(p.getStatus());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void atualizarStatus(Long pedidoId, String novoStatus) {
+        Pedido p = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        p.setStatus(novoStatus);
+        pedidoRepository.save(p);
+    }
+
 }

@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const formaPagamento = sessionStorage.getItem("formaPagamento");
     const pagamentoCartao = JSON.parse(sessionStorage.getItem("pagamentoCartao") || "{}");
     const numeroCartao = pagamentoCartao.numeroCartao;
-    const parcelas    = pagamentoCartao.parcelas;
+    const parcelas = pagamentoCartao.parcelas;
 
     if (!cliente?.id) {
       alert("Você precisa estar logado para continuar o checkout.");
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 3) Renderiza Forma de Pagamento
     const pagamentoInfo = document.getElementById("pagamento-info");
-    const parcelasInfo  = document.getElementById("parcelas-info");
+    const parcelasInfo = document.getElementById("parcelas-info");
     if (formaPagamento === "boleto") {
       pagamentoInfo.textContent = "Boleto Bancário";
       parcelasInfo.style.display = "none";
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const preco = item.produto?.preco ?? item.valor;
         return acc + preco * item.quantidade;
       }, 0);
-      document.getElementById("subtotal").textContent   = subtotal.toFixed(2);
+      document.getElementById("subtotal").textContent = subtotal.toFixed(2);
       document.getElementById("frete-valor").textContent = freteSelecionado.toFixed(2);
       document.getElementById("total-final").textContent = (subtotal + freteSelecionado).toFixed(2);
       sessionStorage.setItem("freteSelecionado", freteSelecionado);
@@ -62,13 +62,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     const lista = document.getElementById("lista-produtos");
     lista.innerHTML = "";
     carrinho.forEach(item => {
-      const prod       = item.produto || {};
-      const nome       = prod.nome || item.nome;
-      const preco      = prod.preco ?? item.valor;
+      const prod = item.produto || {};
+      const nome = prod.nome || item.nome;
+      const preco = prod.preco ?? item.valor;
       const quantidade = item.quantidade;
-      const totalItem  = (preco * quantidade).toFixed(2);
-      const imgName    = (prod.imagens?.[0]?.url) || item.imagem || "placeholder.png";
-      const src        = `http://localhost:8080/uploads/${imgName}`;
+      const totalItem = (preco * quantidade).toFixed(2);
+      const imgName = (prod.imagens?.[0]?.url) || item.imagem || "placeholder.png";
+      const src = `http://localhost:8080/uploads/${imgName}`;
 
       lista.insertAdjacentHTML("beforeend", `
         <div class="produto-item">
@@ -92,9 +92,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 7) Botão Concluir Compra — **AQUI É A MUDANÇA PRINCIPAL**
     document.getElementById("btn-concluir").addEventListener("click", async () => {
       const itensDTO = carrinho.map(item => ({
-        produtoId:  item.produto?.id ?? item.codigo,
-        nome:       item.produto?.nome ?? item.nome,
-        preco:      item.produto?.preco ?? item.valor,
+        produtoId: item.produto?.id ?? item.codigo,
+        nome: item.produto?.nome ?? item.nome,
+        preco: item.produto?.preco ?? item.valor,
         quantidade: item.quantidade
       }));
       const subtotal = carrinho.reduce((acc, item) =>
@@ -102,17 +102,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       const valorTotal = subtotal + freteSelecionado;
 
       const pedido = {
-        clienteId:       cliente.id,
+        clienteId: cliente.id,
         enderecoEntrega: enderecoSelecionado,
-        itens:           itensDTO,
+        itens: itensDTO,
         formaPagamento,
+        valorFrete: freteSelecionado,
         valorTotal
       };
 
       const resp = await fetch("http://localhost:8080/api/pedido", {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(pedido)
+        body: JSON.stringify(pedido)
       });
       if (!resp.ok) throw new Error("Falha ao concluir pedido");
 

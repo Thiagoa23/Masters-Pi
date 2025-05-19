@@ -41,7 +41,10 @@ public class BackofficeController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+        boolean isEstoquista = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ESTOQUISTA"));
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isEstoquista", isEstoquista);
         return "backoffice";
     }
 

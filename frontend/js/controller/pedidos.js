@@ -29,8 +29,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (Array.isArray(p.dataCriacao)) {
       const [y, m, d, h, min] = p.dataCriacao;
       dataFormatada =
-        `${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")}/${y} ` +
-        `${String(h).padStart(2,"0")}:${String(min).padStart(2,"0")}`;
+        `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${y} ` +
+        `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
     }
     return `
       <div class="pedido-card" data-id="${p.id}">
@@ -46,47 +46,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 3) Toggle detalhes, agora apontando para o backend uploads (porta 8080)
   container.querySelectorAll(".pedido-card").forEach(card => {
     const btn = card.querySelector(".btn-detalhes");
-    btn.addEventListener("click", async () => {
-      const aberto = btn.dataset.open === "true";
-
-      if (!aberto) {
-        const resp = await fetch(`http://localhost:8080/api/pedido/${card.dataset.id}`);
-        const full = await resp.json();
-
-        const itemsHtml = (full.itens || []).map(i => {
-          // usa a porta 8080 para buscar uploads do backend
-          const src = i.imagemUrl
-            ? `http://localhost:8080/uploads/${i.imagemUrl}`
-            : `http://localhost:8080/uploads/placeholder.png`;
-
-          return `
-            <div class="item-card">
-              <img src="${src}" alt="${i.nome}" class="item-img" />
-              <div class="item-info">
-                <h4>${i.nome}</h4>
-                <p><strong>Preço:</strong> R$ ${i.preco.toFixed(2)}</p>
-                <p><strong>Quantidade:</strong> ${i.quantidade}</p>
-                <p><strong>Subtotal:</strong> R$ ${(i.preco * i.quantidade).toFixed(2)}</p>
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        card.insertAdjacentHTML("beforeend", `
-          <div class="pedido-items">
-            ${itemsHtml}
-          </div>
-        `);
-
-        btn.textContent = "Menos detalhes";
-        btn.dataset.open = "true";
-
-      } else {
-        const detalhes = card.querySelector(".pedido-items");
-        if (detalhes) detalhes.remove();
-        btn.textContent = "Mais detalhes";
-        btn.dataset.open = "false";
-      }
+    btn.addEventListener("click", () => {
+      const id = card.dataset.id;
+      // sobe ao checkout e abre a tela de pedido-detalhe.html
+      window.location.href = `pedido-detalhe.html?id=${id}`;
     });
   });
 });

@@ -26,6 +26,7 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Pedido {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +35,7 @@ public class Pedido {
     private String status;
     private String formaPagamento;
     private Double valorTotal;
+    private Double valorFrete;
 
     @ManyToOne
     private Cliente cliente;

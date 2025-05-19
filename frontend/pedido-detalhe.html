@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalhe do Pedido | Green Growth</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <style>
+        main {
+            max-width: 1580px;
+            margin: 15vh auto;
+            width: min(85vw, 100%);
+            padding: 3vh clamp(90px, 7vw, 120px);
+            background: #fff;
+            border-radius: 16px;
+        }
+
+        h1 {
+            margin-bottom: 24px;
+        }
+
+        section {
+            margin-bottom: 24px;
+        }
+
+        .item-card {
+            display: flex;
+            gap: 16px;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+            align-items: center;
+        }
+
+        .item-card img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .totais {
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .btn-voltar {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 24px;
+            border: 2px solid #1DB06A;
+            border-radius: 8px;
+            background: transparent;
+            color: #1DB06A;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-voltar:hover {
+            background: #e8f5e9;
+        }
+
+        .itens-scroll {
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 8px;
+        }
+
+        .item-card {
+            margin-bottom: 5px;
+        }
+    </style>
+    <script src="../js/controller/PedidoDetalheController.js" defer></script>
+</head>
+
+<body>
+    <!-- seu componente de Navbar -->
+    <div id="navbar-container"></div>
+    <main>
+        <h1>Detalhe do Pedido</h1>
+        <!-- aqui vamos injetar tudo via JS -->
+        <div id="detalhe-container">
+            <p>Carregando detalhes do pedido...</p>
+        </div>
+    </main>
+    <script type="module" src="../componentes/Navbar.js"></script>
+</body>
+
+</html>

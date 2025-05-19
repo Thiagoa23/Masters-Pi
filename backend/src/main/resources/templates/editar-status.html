@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>Editar Status do Pedido</title>
+        <link rel="stylesheet" th:href="@{/css/global.css}">
+        <style>
+            main {
+                max-width:800px;
+                margin:5vh auto;
+                padding:24px;
+                background:#fff;
+                border-radius:8px;
+            }
+            label, select, button {
+                display:block;
+                width:100%;
+                margin-bottom:12px;
+                font-size:1rem;
+            }
+            select {
+                padding:8px;
+            }
+            button {
+                padding:12px;
+                background:#1DB06A;
+                color:#fff;
+                border:none;
+                border-radius:4px;
+                cursor:pointer;
+            }
+            button:hover {
+                background:#17a65c;
+            }
+        </style>
+    </head>
+    <body>
+
+        <main>
+            <h1>Editar Status do Pedido <span th:text="${pedido.numeroPedido}"></span></h1>
+
+            <form th:action="@{/estoque/pedido/{id}/status(id=${pedido.id})}"
+                  th:object="${pedido}"
+                  method="post">
+
+                <label for="status">Novo status:</label>
+                <select th:field="*{status}">
+                    <option th:each="s : ${T(com.masterspi.model.Status).values()}"
+                            th:value="${s}"
+                            th:text="${s}">
+                    </option>
+                </select>
+
+
+
+                <button type="submit">Salvar</button>
+            </form>
+
+            <p><a th:href="@{/estoque/pedidos}">← Voltar à lista</a></p>
+        </main>
+    </body>
+</html>

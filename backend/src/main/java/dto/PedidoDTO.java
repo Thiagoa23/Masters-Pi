@@ -20,6 +20,7 @@ public class PedidoDTO {
     private Long clienteId;
     private EnderecoEntrega enderecoEntrega;
     private String formaPagamento;
+    private Double valorFrete;  
     private Double valorTotal;
     private List<ItemPedidoDTO> itens;
     private String status;

@@ -7,6 +7,7 @@ package com.masterspi.controller;
 import com.masterspi.service.PedidoService;
 import dto.PedidoDTO;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,4 +45,12 @@ public class PedidoController {
         return ResponseEntity.ok(dto);
     }
 
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> atualizarStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+        String novoStatus = body.get("status");
+        pedidoService.atualizarStatus(id, novoStatus);
+        return ResponseEntity.ok().build();
+    }
 }

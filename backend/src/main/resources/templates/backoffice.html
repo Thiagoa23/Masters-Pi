@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Página Principal do Backoffice</title>
-</head>
-<body>
-    <h1>Tela Backoffice</h1>
+    <head>
+        <meta charset="UTF-8">
+        <title>Página Principal do Backoffice</title>
+    </head>
+    <body>
+        <h1>Tela Backoffice</h1>
 
-    <nav>
-        <ul>
-            <li><a th:href="@{/backoffice/produtos}">📦 Listar Produtos</a></li>
-            <li th:if="${isAdmin}"><a th:href="@{/backoffice/usuarios}">Lista de Usuários</a></li>
-        </ul>
-    </nav>
-</body>
+        <nav>
+            <ul>
+                <li><a th:href="@{/backoffice/produtos}">📦 Listar Produtos</a></li>
+                <li th:if="${isAdmin}">
+                    <a th:href="@{/backoffice/usuarios}">👥 Lista de Usuários</a>
+                </li>
+                <li th:if="${isEstoquista}">
+                    <a th:href="@{/estoque/pedidos}">📝 Listar Pedidos</a>
+                </li>
+            </ul>
+        </nav>
+    </body>
 </html>

@@ -22,5 +22,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     
     List<Pedido> findByClienteIdOrderByDataCriacaoDesc(Long clienteId);
 
+    List<Pedido> findAllByOrderByDataCriacaoDesc();
 }
 
